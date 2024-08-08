@@ -1,18 +1,30 @@
 {
-    "name": "meius/laravel-filter",
-    "description": "desc",
-    "type": "library",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Meius\\LaravelFilter\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Bohdan Meius",
-            "email": "bohdan.meius@gmail.com"
-        }
-    ],
-    "require": {}
+  "name": "meius/laravel-filter",
+  "description": "desc",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Meius\\LaravelFilter\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Bohdan Meius",
+      "email": "bohdan.meius@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.0",
+    "illuminate/support": "^10"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Meius\\LaravelFilter\\Providers\\AppServiceProvider",
+        "Meius\\LaravelFilter\\Providers\\FilterServiceProvider"
+      ]
+    }
+  }
 }
