@@ -170,7 +170,29 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
        }
     }
     ```
+### Example Request Structure
+
+1. For filters to work correctly, the query must have the appropriate structure. Here is an example of how the query should be structured:
+
+    ```json
+    {
+      "filter": {
+        "posts": {
+          "title": "Deep Thoughts on the Hitchhiker's Guide",
+          "published_after": "2005-04-28"
+        },
+        "comments": {
+          "content": "The answer to this question is 42"
+        }
+      }
+    }
+    ```
+2. Example request:
+
+    ```http
+    GET /posts?filter[posts][title]=Hitchhiker&filter[posts][published_after]=2005-04-28&filter[comments][content]=42
+    ```
 
 ## License
 
-This package is open-sourced software licensed under the [MIT license](LICENSE.md).
+This package is open-sourced software licensed under the [MIT license](LICENSE).

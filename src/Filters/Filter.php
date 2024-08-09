@@ -46,13 +46,13 @@ abstract class Filter implements FilterInterface
         return true;
     }
 
-    protected function pathFromRequest(): string
-    {
-        return "filter.{$this->model->getTable()}.$this->key";
-    }
-
     protected function scopeName(): string
     {
         return "filter:{$this->model->getTable()}-by-$this->key";
+    }
+
+    private function pathFromRequest(): string
+    {
+        return "filter.{$this->model->getTable()}.$this->key";
     }
 }
