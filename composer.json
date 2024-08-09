@@ -1,6 +1,15 @@
 {
   "name": "meius/laravel-filter",
-  "description": "desc",
+  "description": "A Laravel package for applying dynamic filters to Eloquent models based on request parameters.",
+  "keywords": [
+    "laravel",
+    "filter",
+    "eloquent",
+    "dynamic",
+    "request",
+    "model",
+    "attributes"
+  ],
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -16,8 +25,8 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^8.0",
-    "illuminate/support": "^10"
+    "php": ">=8.0",
+    "illuminate/support": ">=10"
   },
   "extra": {
     "laravel": {
