@@ -39,14 +39,14 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 
 ### Applying Filters
 
-1. Use the `UseFilters` trait in your controller class:
+1. Use the `Filterable` trait in your controller class:
     ```php
     use App\Http\Controllers\Controller as BaseController;
-    use Meius\LaravelFilter\Traits\UseFilters;
+    use Meius\LaravelFilter\Traits\Filterable;
 
     class PostController extends BaseController
     {
-        use UseFilters;
+        use Filterable;
 
         // Your methods
     }
@@ -68,7 +68,7 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 
     class PostController
     {
-        use UseFilters;
+        use Filterable;
 
         #[ApplyFiltersTo(Post::class, ...Models)]
         public function index()
