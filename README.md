@@ -132,7 +132,7 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
 1. Create a filter with `ExcludeFor`:
     ```php
     use App\Models\User;
-    use Meius\LaravelFilter\Attributes\ExcludeFor
+    use Meius\LaravelFilter\Attributes\ExcludeFor;
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will never be applied to the "User" model and beyond.
