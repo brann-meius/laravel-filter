@@ -14,13 +14,18 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
           "type": "github",
           "url": "https://github.com/brann-meius/laravel-filter.git"
         }
-      ]
+      ],
+      "config": {
+        "github-oauth": {
+          "github.com": "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"
+        }
+      }
     }
     ```
 
 2. Install the package via Composer:
     ```bash
-    composer require meius/laravel-filter
+    composer require meius/laravel-filter:dev-develop
     ```
 
 ## Usage
