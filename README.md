@@ -6,7 +6,7 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 
 ## Installation
 
-1. To install this private package, add the following repository to your `composer.json`:
+1. Add the following repository to your `composer.json`:
     ```json
     {
       "repositories": [
@@ -32,8 +32,8 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 
 ### Creating Filters
 
-1. To create a new filter, use the `make:filter` Artisan command: 
-    ```bash 
+1. To create a new filter, use the `make:filter` Artisan command:
+    ```bash
     php artisan make:filter {name}
     ```
 
@@ -51,7 +51,8 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
         // Your methods
     }
     ```
-2. Or extends the `Controller`:
+
+2. Or extend the `Controller`:
     ```php
     use Meius\LaravelFilter\Http\Controllers\Controller;
 
@@ -84,46 +85,46 @@ Here is an example of how to define and apply filters:
 
 1. Create a filter:
     ```php
-   use Illuminate\Database\Eloquent\Builder;
-   use Meius\LaravelFilter\Filters\Filter;
+    use Illuminate\Database\Eloquent\Builder;
+    use Meius\LaravelFilter\Filters\Filter;
 
-   return new class extends Filter
-   {
-       /**
-        * The key used to identify the filter parameter in the request.
-        */
-       protected string $key = 'title';
+    return new class extends Filter
+    {
+        /**
+         * The key used to identify the filter parameter in the request.
+         */
+        protected string $key = 'title';
 
-       protected function query(Builder $builder, $value): Builder
-       {
-           return $builder->where('title', 'like', "%$value%");
-       }
-   }
-   ```
+        protected function query(Builder $builder, $value): Builder
+        {
+            return $builder->where('title', 'like', "%$value%");
+        }
+    };
+    ```
 
 2. If you need to apply a filter according to a condition, you can use the `canContinue` method:
     ```php
-   use Illuminate\Database\Eloquent\Builder;
-   use Meius\LaravelFilter\Filters\Filter;
+    use Illuminate\Database\Eloquent\Builder;
+    use Meius\LaravelFilter\Filters\Filter;
 
-   return new class extends Filter
-   {
-       /**
-        * The key used to identify the filter parameter in the request.
-        */
-       protected string $key = 'owner';
+    return new class extends Filter
+    {
+        /**
+         * The key used to identify the filter parameter in the request.
+         */
+        protected string $key = 'owner';
 
-       protected function query(Builder $builder, $value): Builder
-       {
-           return $builder->where('user_id', '=', $value);
-       }        
-   
-       protected function canContinue(Request $request): bool
-       {
-           return $request->user()->verified();
-       }
-   }
-   ```
+        protected function query(Builder $builder, $value): Builder
+        {
+            return $builder->where('user_id', '=', $value);
+        }
+
+        protected function canContinue(Request $request): bool
+        {
+            return $request->user()->verified();
+        }
+    };
+    ```
 
 ### Using `ExcludeFor` and `OnlyFor` Attributes
 
@@ -138,16 +139,16 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
     // The filter will never be applied to the "User" model and beyond.
     return new #[ExcludeFor(User::class, ...Models)] class extends Filter
     {
-       /**
-        * The key used to identify the filter parameter in the request.
-        */
-       protected string $key = 'content';
+        /**
+         * The key used to identify the filter parameter in the request.
+         */
+        protected string $key = 'content';
 
-       protected function query(Builder $builder, $value): Builder
-       {
-           // Filter logic
-       }
-    }
+        protected function query(Builder $builder, $value): Builder
+        {
+            // Filter logic
+        }
+    };
     ```
 
 2. Create a filter with `OnlyFor`:
@@ -159,17 +160,18 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
     // The filter will be applied to the "Post" model and beyond only.
     return new #[OnlyFor(Post::class, ...Models)] class extends Filter
     {
-       /**
-        * The key used to identify the filter parameter in the request.
-        */
-       protected string $key = 'content';
+        /**
+         * The key used to identify the filter parameter in the request.
+         */
+        protected string $key = 'content';
 
-       protected function query(Builder $builder, $value): Builder
-       {
-           // Filter logic
-       }
-    }
+        protected function query(Builder $builder, $value): Builder
+        {
+            // Filter logic
+        }
+    };
     ```
+
 ### Example Request Structure
 
 1. For filters to work correctly, the query must have the appropriate structure. Here is an example of how the query should be structured:
@@ -187,6 +189,7 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
       }
     }
     ```
+
 2. Example request:
 
     ```http
