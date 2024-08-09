@@ -6,7 +6,19 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 
 ## Installation
 
-1. Install the package via Composer(<font color="#CC0000">not working now</font>):
+1. To install this private package, add the following repository to your `composer.json`:
+    ```json
+    {
+      "repositories": [
+        {
+          "type": "github",
+          "url": "https://github.com/brann-meius/laravel-filter.git"
+        }
+      ]
+    }
+    ```
+
+2. Install the package via Composer:
     ```bash
     composer require meius/laravel-filter
     ```
