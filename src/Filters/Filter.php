@@ -12,6 +12,9 @@ abstract class Filter implements FilterInterface
 {
     protected Model $model;
 
+    /**
+     * The key used to identify the filter parameter in the request.
+     */
     protected string $key;
 
     /**
