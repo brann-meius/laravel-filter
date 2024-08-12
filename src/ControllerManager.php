@@ -9,7 +9,7 @@ use Meius\LaravelFilter\Attributes\ApplyFiltersTo;
 use Meius\LaravelFilter\Traits\Reflective;
 use ReflectionMethod;
 
-class ControllerManager
+final class ControllerManager
 {
     use Reflective;
 
@@ -17,6 +17,9 @@ class ControllerManager
         private FilterManager $filterManager,
     ) {}
 
+    /**
+     * Handle the application of filters to the specified controller method.
+     */
     public function handle(Controller $context, string $method): void
     {
         $reflectionMethod = new ReflectionMethod($context, $method);

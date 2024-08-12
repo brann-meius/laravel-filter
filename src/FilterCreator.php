@@ -14,6 +14,9 @@ class FilterCreator
         private Filesystem $filesystem,
     ) {}
 
+    /**
+     * Create a new filter file with the given name.
+     */
     public function create(string $name): void
     {
         $this->ensureFilterDoesntAlreadyExist($name);
@@ -31,7 +34,7 @@ class FilterCreator
      */
     protected function ensureFilterDoesntAlreadyExist(string $name): void
     {
-        if (! empty($this->filesystem->glob($this->path($name)))) {
+        if ($this->filesystem->exists($this->path($name))) {
             throw new InvalidArgumentException("The {$name} filter already exists.");
         }
     }
@@ -44,6 +47,9 @@ class FilterCreator
         return $this->filterManager->baseFilterDirectory().'/'.$name.'.php';
     }
 
+    /**
+     * Get the stub content for the filter.
+     */
     protected function stub(): string
     {
         return $this->filesystem->get(__DIR__.'/filter.stub');

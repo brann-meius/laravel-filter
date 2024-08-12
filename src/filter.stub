@@ -12,6 +12,9 @@ return new class extends Filter
      */
     protected string $key;
 
+    /**
+     * Define the query logic for the filter.
+     */
     protected function query(Builder $builder, $value): Builder
     {
         return $builder;

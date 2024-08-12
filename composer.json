@@ -32,7 +32,8 @@
     "laravel": {
       "providers": [
         "Meius\\LaravelFilter\\Providers\\AppServiceProvider",
-        "Meius\\LaravelFilter\\Providers\\FilterServiceProvider"
+        "Meius\\LaravelFilter\\Providers\\FilterServiceProvider",
+        "Meius\\LaravelFilter\\Providers\\LoggerServiceProvider"
       ]
     }
   }

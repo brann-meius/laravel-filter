@@ -14,8 +14,17 @@ abstract class Filter implements FilterInterface
 
     protected string $key;
 
+    /**
+     * Define the query logic for the filter.
+     *
+     * This method should be implemented by subclasses to specify how the filter
+     * should modify the query builder based on the provided value.
+     */
     abstract protected function query(Builder $builder, $value): Builder;
 
+    /**
+     * Create a new filter instance.
+     */
     public function create(string $pathToModel): self
     {
         $this->model = app($pathToModel);
@@ -23,6 +32,9 @@ abstract class Filter implements FilterInterface
         return $this;
     }
 
+    /**
+     * Apply the filter to the request.
+     */
     public function apply(Request $request): void
     {
         if (empty($this->model)) {
@@ -41,17 +53,26 @@ abstract class Filter implements FilterInterface
         });
     }
 
+    /**
+     * Determine if the filter can continue.
+     */
     protected function canContinue(Request $request): bool
     {
         return true;
     }
 
+    /**
+     * Get the scope name for the filter.
+     */
     protected function scopeName(): string
     {
         return "filter:{$this->model->getTable()}-by-$this->key";
     }
 
-    private function pathFromRequest(): string
+    /**
+     * Get the path from the request.
+     */
+    final protected function pathFromRequest(): string
     {
         return "filter.{$this->model->getTable()}.$this->key";
     }
