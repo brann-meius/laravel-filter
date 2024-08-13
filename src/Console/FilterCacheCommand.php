@@ -56,7 +56,8 @@ class FilterCacheCommand extends Command
                 if (! isset($modelFilterMap[$model])) {
                     $modelFilterMap[$model] = [];
                 }
-                $modelFilterMap[$model][] = get_class($filter);
+
+                $modelFilterMap[$model][] = (new \ReflectionClass($filter))->getFileName();
             }
         }
 
