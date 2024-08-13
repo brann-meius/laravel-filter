@@ -79,6 +79,14 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
     }
     ```
 
+## Caching Filters
+
+1. To cache the filters for faster loading, run the following Artisan command:
+
+    ```bash
+    php artisan filter:cache
+    ```
+
 ### Example
 
 Here is an example of how to define and apply filters:
