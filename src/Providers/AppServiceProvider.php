@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Meius\LaravelFilter\Console\FilterCacheCommand;
+use Meius\LaravelFilter\Console\FilterClearCommand;
 use Meius\LaravelFilter\Console\FilterMakeCommand;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +16,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 FilterMakeCommand::class,
+                FilterClearCommand::class,
+                FilterCacheCommand::class,
             ]);
         }
     }

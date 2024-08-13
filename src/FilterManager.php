@@ -33,7 +33,7 @@ class FilterManager
     /**
      * Apply the given filter to the specified models based on the request.
      */
-    public function apply(FilterInterface $filter, array $pathsToModels, Request $request): void
+    public function apply(FilterInterface $filter, array $pathsToModels, Request $request): array
     {
         $reflection = new \ReflectionClass($filter);
 
@@ -42,6 +42,8 @@ class FilterManager
         }
 
         $this->applyFilterToModels($filter, $pathsToModels, $request);
+
+        return $pathsToModels;
     }
 
     /**
@@ -84,6 +86,14 @@ class FilterManager
     public function baseFilterDirectory(): string
     {
         return app_path('Filters');
+    }
+
+    /**
+     * Retrieve the list of directories that contain filter classes.
+     */
+    public function getDirectoriesWithFilters(): array
+    {
+        return $this->directoriesWithFilters;
     }
 
     /**
