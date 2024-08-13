@@ -6,6 +6,7 @@ namespace Meius\LaravelFilter;
 
 use Generator;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
@@ -25,10 +26,14 @@ class FilterManager
 
     private array $directoriesWithFilters = [];
 
+    private string $cachePath;
+
     public function __construct(
         private Filesystem $filesystem,
         private LoggerInterface $logger,
-    ) {}
+    ) {
+        $this->cachePath = app()->bootstrapPath('cache/filters.php');
+    }
 
     /**
      * Apply the given filter to the specified models based on the request.
@@ -47,6 +52,38 @@ class FilterManager
     }
 
     /**
+     * @param  class-string<Model>[]  $pathToModels
+     *
+     * @throws FileNotFoundException
+     */
+    public function applyFiltersFromCache(array $pathToModels): void
+    {
+        $filters = $this->filesystem->requireOnce($this->cachePath);
+
+        foreach ($pathToModels as $pathToModel) {
+            if (empty($filters[$pathToModel])) {
+                continue;
+            }
+
+            foreach ($filters[$pathToModel] as $pathToFilter) {
+                $filter = $this->filter($pathToFilter);
+
+                if ($filter) {
+                    $this->apply($filter, [$pathToModel], request());
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if the cache file exists.
+     */
+    public function isCacheExist(): bool
+    {
+        return $this->filesystem->exists($this->cachePath);
+    }
+
+    /**
      * Retrieve all available filters.
      *
      * @return Generator<FilterInterface>
@@ -54,13 +91,7 @@ class FilterManager
     public function filters(): Generator
     {
         foreach ($this->pathsToFilters() as $pathToFilter) {
-            try {
-                $filter = $this->filesystem->requireOnce($pathToFilter);
-            } catch (FileNotFoundException) {
-                $this->logger->error("The filter file at $pathToFilter could not be found.");
-
-                continue;
-            }
+            $filter = $this->filter($pathToFilter);
 
             if ($filter instanceof FilterInterface && ! (new \ReflectionClass($filter))->isAbstract()) {
                 yield $filter;
@@ -94,6 +125,32 @@ class FilterManager
     public function getDirectoriesWithFilters(): array
     {
         return $this->directoriesWithFilters;
+    }
+
+    /**
+     * Retrieve available filter.
+     */
+    protected function filter(string $pathToFilter): FilterInterface|false
+    {
+        static $as = [];
+
+        try {
+            $filter = $this->filesystem->requireOnce($pathToFilter);
+
+            if ($filter instanceof FilterInterface) {
+                $as[$pathToFilter] = $filter::class;
+            }
+
+            if ($filter === EXTR_SKIP || $filter === true) {
+                $filter = new $as[$pathToFilter];
+            }
+
+            return $filter;
+        } catch (FileNotFoundException) {
+            $this->logger->error("The filter file at $pathToFilter could not be found.");
+
+            return false;
+        }
     }
 
     /**

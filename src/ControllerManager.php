@@ -34,6 +34,12 @@ final class ControllerManager
             return;
         }
 
+        if ($this->filterManager->isCacheExist()) {
+            $this->filterManager->applyFiltersFromCache($pathsToRequiredModels);
+
+            return;
+        }
+
         foreach ($this->filterManager->filters() as $filter) {
             $this->filterManager->apply($filter, $pathsToRequiredModels, request());
         }
