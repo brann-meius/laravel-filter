@@ -19,6 +19,8 @@ class FilterClearCommand extends Command
             app()->bootstrapPath('cache/filters.php')
         );
 
+        $this->components->info('Filters cache cleared successfully.');
+
         return self::SUCCESS;
     }
 }

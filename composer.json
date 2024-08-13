@@ -26,7 +26,10 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=8.0",
-    "illuminate/support": ">=10"
+    "illuminate/support": ">=10",
+    "illuminate/database": ">=10",
+    "illuminate/console": ">=10",
+    "illuminate/filesystem": ">=10"
   },
   "extra": {
     "laravel": {

@@ -11,7 +11,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
-use Meius\LaravelFilter\Attributes\Settings\Setting;
+use Meius\LaravelFilter\Attributes\Setting;
 use Meius\LaravelFilter\Filters\FilterInterface;
 use Meius\LaravelFilter\Traits\Reflective;
 use Psr\Log\LoggerInterface;
