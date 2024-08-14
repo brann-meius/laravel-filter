@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter;
 
+use Symfony\Component\Finder\Finder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
-use RecursiveCallbackFilterIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SplFileInfo;
 
 class ModelManager
 {
+    private static array $classExistsCache = [];
+    private static array $reflectionClassCache = [];
+
     public function __construct(
         private FilterManager $filterManager,
+        private Finder $finder,
     ) {}
 
     /**
@@ -26,39 +28,50 @@ class ModelManager
     {
         $models = [];
         $ignoredDirectories = array_map('realpath', $this->filterManager->getDirectoriesWithFilters());
-        $directoryIterator = new RecursiveDirectoryIterator(App::path());
-        $filterIterator = new RecursiveCallbackFilterIterator($directoryIterator, function ($current, $key, $iterator) use ($ignoredDirectories) {
-            /** @var SplFileInfo $current */
-            if ($iterator->hasChildren()) {
-                foreach ($ignoredDirectories as $ignoredDirectory) {
-                    if (str_starts_with($current->getPathname(), $ignoredDirectory)) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        });
-
-        $iterator = new RecursiveIteratorIterator($filterIterator);
+        $this->finder->files()
+            ->in(App::path())
+            ->exclude($ignoredDirectories)
+            ->name('*.php');
 
         /** @var SplFileInfo $file */
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getExtension() === 'php') {
-                $namespace = $this->getNamespaceFromFile($file);
-                $className = $namespace.'\\'.$file->getBasename('.php');
+        foreach ($this->finder as $file) {
+            $namespace = $this->getNamespaceFromFile($file);
+            $className = $namespace.'\\'.$file->getBasename('.php');
 
-                if (class_exists($className)) {
-                    $reflectionClass = new \ReflectionClass($className);
+            if ($this->classExists($className)) {
+                $reflectionClass = $this->getReflectionClass($className);
 
-                    if ($reflectionClass->isSubclassOf(Model::class) && ! $reflectionClass->isAbstract()) {
-                        $models[] = $className;
-                    }
+                if ($reflectionClass->isSubclassOf(Model::class) && ! $reflectionClass->isAbstract()) {
+                    $models[] = $className;
                 }
             }
         }
 
         return $models;
+    }
+
+    /**
+     * Check if a class exists with caching.
+     */
+    private function classExists(string $className): bool
+    {
+        if (!isset(self::$classExistsCache[$className])) {
+            self::$classExistsCache[$className] = class_exists($className);
+        }
+
+        return self::$classExistsCache[$className];
+    }
+
+    /**
+     * Get the reflection class with caching.
+     */
+    private function getReflectionClass(string $className): \ReflectionClass
+    {
+        if (!isset(self::$reflectionClassCache[$className])) {
+            self::$reflectionClassCache[$className] = new \ReflectionClass($className);
+        }
+
+        return self::$reflectionClassCache[$className];
     }
 
     /**
