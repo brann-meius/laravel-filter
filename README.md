@@ -55,7 +55,7 @@ To get started with the `meius/laravel-filter` package, follow the installation 
 
 2. Install the package via Composer:
     ```bash
-    composer require meius/laravel-filter
+    composer require meius/laravel-filter:dev-develop
     ```
 
 ## Usage
