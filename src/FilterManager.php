@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Meius\LaravelFilter\Attributes\Setting;
 use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
-use Meius\LaravelFilter\Attributes\Setting;
 use Meius\LaravelFilter\Filters\FilterInterface;
 use Meius\LaravelFilter\Traits\Reflective;
 use Psr\Log\LoggerInterface;
 use ReflectionAttribute;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Manages the application and retrieval of filters for Eloquent models.
@@ -31,6 +32,7 @@ class FilterManager
 
     public function __construct(
         private Filesystem $filesystem,
+        private Finder $finder,
         private LoggerInterface $logger,
     ) {
         $this->cachePath = App::bootstrapPath('cache/filters.php');
@@ -202,11 +204,13 @@ class FilterManager
     private function pullOutFiltersPaths(string $path): array
     {
         $filters = [];
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $this->finder->files()
+            ->in($path)
+            ->name('*.php');
 
-        foreach ($iterator as $file) {
+        foreach ($this->finder as $file) {
             if ($file->isFile() && $file->getExtension() === 'php') {
-                $filters[] = $file->getPathname();
+                $filters[] = $file->getRealPath();
             }
         }
 
