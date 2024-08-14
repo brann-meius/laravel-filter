@@ -135,17 +135,21 @@ class FilterManager
      */
     protected function filter(string $pathToFilter): FilterInterface|false
     {
-        static $as = [];
+        static $loadedFilters = [];
+
+        if (isset($loadedFilters[$pathToFilter])) {
+            return new $loadedFilters[$pathToFilter];
+        }
 
         try {
             $filter = $this->filesystem->requireOnce($pathToFilter);
 
             if ($filter instanceof FilterInterface) {
-                $as[$pathToFilter] = $filter::class;
+                $loadedFilters[$pathToFilter] = $filter::class;
             }
 
             if ($filter === EXTR_SKIP || $filter === true) {
-                $filter = new $as[$pathToFilter];
+                throw new FileNotFoundException('Filter file not found.');
             }
 
             return $filter;
