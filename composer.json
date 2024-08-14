@@ -25,11 +25,11 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": ">=8.0",
-    "illuminate/support": ">=10",
-    "illuminate/database": ">=10",
-    "illuminate/console": ">=10",
-    "illuminate/filesystem": ">=10"
+    "php": "^8",
+    "illuminate/support": "^8-^11",
+    "illuminate/database": "^8-^11",
+    "illuminate/console": "^8-^11",
+    "illuminate/filesystem": "^8-^11"
   },
   "extra": {
     "laravel": {
