@@ -82,17 +82,7 @@ To get started with the `meius/laravel-filter` package, follow the installation 
     }
     ```
 
-2. Or extend the `Controller`:
-    ```php
-    use Meius\LaravelFilter\Http\Controllers\Controller;
-
-    class PostController extends Controller
-    {
-        // Your methods
-    }
-    ```
-
-3. Define filters using attributes in your controller methods:
+2. Define filters using attributes in your controller methods:
     ```php
     use App\Attributes\Filter\ApplyFiltersTo;
     use App\Models\Post;

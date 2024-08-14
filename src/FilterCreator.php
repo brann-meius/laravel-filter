@@ -17,7 +17,7 @@ class FilterCreator
     /**
      * Create a new filter file with the given name.
      */
-    public function create(string $name): void
+    public function create(string $name): string
     {
         $this->ensureFilterDoesntAlreadyExist($name);
 
@@ -25,6 +25,8 @@ class FilterCreator
 
         $this->filesystem->ensureDirectoryExists(dirname($path));
         $this->filesystem->put($path, $this->stub());
+
+        return $this->path($name);
     }
 
     /**

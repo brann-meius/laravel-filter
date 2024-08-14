@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -25,7 +26,7 @@ class ModelManager
     {
         $models = [];
         $ignoredDirectories = array_map('realpath', $this->filterManager->getDirectoriesWithFilters());
-        $directoryIterator = new RecursiveDirectoryIterator(app_path());
+        $directoryIterator = new RecursiveDirectoryIterator(App::path());
         $filterIterator = new RecursiveCallbackFilterIterator($directoryIterator, function ($current, $key, $iterator) use ($ignoredDirectories) {
             /** @var SplFileInfo $current */
             if ($iterator->hasChildren()) {

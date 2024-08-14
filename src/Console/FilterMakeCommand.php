@@ -16,12 +16,14 @@ class FilterMakeCommand extends Command
     public function handle(FilterCreator $filterCreator): int
     {
         try {
-            $filterCreator->create($this->argument('name'));
+            $path = $filterCreator->create($this->argument('name'));
         } catch (\Throwable $exception) {
             $this->error($exception->getMessage());
 
             return self::FAILURE;
         }
+
+        $this->components->info("Filter [$path] created successfully.");
 
         return self::SUCCESS;
     }

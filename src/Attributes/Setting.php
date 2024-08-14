@@ -14,16 +14,17 @@ abstract class Setting
      * Create a new attribute instance.
      *
      * @param  class-string<Model>[]  $models
+     *
      * @throws InvalidModelException
      */
     public function __construct(string ...$models)
     {
         if (empty($models)) {
-            throw new InvalidModelException("The models array cannot be empty.");
+            throw new InvalidModelException('The models array cannot be empty.');
         }
 
         foreach ($models as $model) {
-            if (!class_exists($model)) {
+            if (! class_exists($model)) {
                 throw new InvalidModelException("The class {$model} does not exist.");
             }
 

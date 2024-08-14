@@ -6,6 +6,8 @@ namespace Meius\LaravelFilter\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Request;
 use Meius\LaravelFilter\FilterManager;
 use Meius\LaravelFilter\ModelManager;
 
@@ -33,10 +35,16 @@ class FilterCacheCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->filesystem->put(
-            app()->bootstrapPath('cache/filters.php'),
-            '<?php return '.var_export($filters, true).';'.PHP_EOL
-        );
+        try {
+            $this->filesystem->put(
+                App::bootstrapPath('cache/filters.php'),
+                '<?php return '.var_export($filters, true).';'.PHP_EOL
+            );
+        } catch (\Throwable $exception) {
+            $this->error('Failed to write filters cache file: '.$exception->getMessage());
+
+            return self::FAILURE;
+        }
 
         $this->components->info('Filters cached successfully.');
 
@@ -50,7 +58,7 @@ class FilterCacheCommand extends Command
         $modelFilterMap = [];
 
         foreach ($filters as $filter) {
-            $filteredModels = $this->filterManager->apply($filter, $models, request());
+            $filteredModels = $this->filterManager->apply($filter, $models, Request::instance());
 
             foreach ($filteredModels as $model) {
                 if (! isset($modelFilterMap[$model])) {

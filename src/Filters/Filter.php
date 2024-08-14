@@ -7,6 +7,7 @@ namespace Meius\LaravelFilter\Filters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 abstract class Filter implements FilterInterface
 {
@@ -30,7 +31,7 @@ abstract class Filter implements FilterInterface
      */
     public function create(string $pathToModel): self
     {
-        $this->model = app($pathToModel);
+        $this->model = App::make($pathToModel);
 
         return $this;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Traits;
 
+use Illuminate\Support\Facades\App;
 use Meius\LaravelFilter\ControllerManager;
 
 trait Filterable
@@ -19,7 +20,7 @@ trait Filterable
     private function applyFilters(string $method): void
     {
         /* @var ControllerManager $manager */
-        $manager = app(ControllerManager::class);
+        $manager = App::make(ControllerManager::class);
 
         $manager->handle($this, $method);
     }

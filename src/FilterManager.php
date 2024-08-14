@@ -9,6 +9,7 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
 use Meius\LaravelFilter\Attributes\Setting;
@@ -32,7 +33,7 @@ class FilterManager
         private Filesystem $filesystem,
         private LoggerInterface $logger,
     ) {
-        $this->cachePath = app()->bootstrapPath('cache/filters.php');
+        $this->cachePath = App::bootstrapPath('cache/filters.php');
     }
 
     /**
@@ -56,7 +57,7 @@ class FilterManager
      *
      * @throws FileNotFoundException
      */
-    public function applyFiltersFromCache(array $pathToModels): void
+    public function applyFiltersFromCache(array $pathToModels, Request $request): void
     {
         $filters = $this->filesystem->requireOnce($this->cachePath);
 
@@ -69,7 +70,7 @@ class FilterManager
                 $filter = $this->filter($pathToFilter);
 
                 if ($filter) {
-                    $this->apply($filter, [$pathToModel], request());
+                    $this->apply($filter, [$pathToModel], $request);
                 }
             }
         }
@@ -116,7 +117,7 @@ class FilterManager
      */
     public function baseFilterDirectory(): string
     {
-        return app_path('Filters');
+        return App::path('Filters');
     }
 
     /**

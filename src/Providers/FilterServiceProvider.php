@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Providers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
+use Meius\LaravelFilter\ControllerManager;
 use Meius\LaravelFilter\FilterManager;
 
 class FilterServiceProvider extends ServiceProvider
@@ -16,11 +18,12 @@ class FilterServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singletonIf(FilterManager::class);
+        $this->app->singletonIf(ControllerManager::class);
     }
 
     public function boot(): void
     {
-        $this->filterManager = app(FilterManager::class);
+        $this->filterManager = App::make(FilterManager::class);
 
         $this->filterManager->addFiltersDirectory(...$this->discoveredFilters());
     }
