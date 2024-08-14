@@ -26,10 +26,10 @@
   "minimum-stability": "dev",
   "require": {
     "php": "^8",
-    "illuminate/support": "^8-^11",
-    "illuminate/database": "^8-^11",
-    "illuminate/console": "^8-^11",
-    "illuminate/filesystem": "^8-^11"
+    "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+    "illuminate/database": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+    "illuminate/console": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+    "illuminate/filesystem": "^8.0 || ^9.0 || ^10.0 || ^11.0"
   },
   "extra": {
     "laravel": {
