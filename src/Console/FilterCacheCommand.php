@@ -51,6 +51,9 @@ class FilterCacheCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Retrieve and map filters to their respective models.
+     */
     private function filters(): array
     {
         $filters = $this->filterManager->filters();

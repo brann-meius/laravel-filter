@@ -56,8 +56,9 @@ final class ControllerManager
         }
     }
 
-
-
+    /**
+     * Retrieve the reflection method for the specified controller method.
+     */
     private function getReflectionMethod(Controller $context, string $method): ReflectionMethod
     {
         $cacheKey = get_class($context).'::'.$method;

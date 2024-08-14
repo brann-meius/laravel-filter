@@ -28,6 +28,9 @@ class FilterServiceProvider extends ServiceProvider
         $this->filterManager->addFiltersDirectory(...$this->discoveredFilters());
     }
 
+    /**
+     * Discover filter directories.
+     */
     protected function discoveredFilters(): array
     {
         return $this->findInBaseDirectory
@@ -35,6 +38,9 @@ class FilterServiceProvider extends ServiceProvider
             : $this->discoverFiltersWithin();
     }
 
+    /**
+     * Discover filters within the base directory.
+     */
     protected function discoverFiltersWithin(): array
     {
         return [
@@ -42,6 +48,9 @@ class FilterServiceProvider extends ServiceProvider
         ];
     }
 
+    /**
+     * Get the base filter directory.
+     */
     private function baseFilterDirectory(): string
     {
         return $this->filterManager->baseFilterDirectory();
