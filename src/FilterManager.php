@@ -209,9 +209,7 @@ class FilterManager
             ->name('*.php');
 
         foreach ($this->finder as $file) {
-            if ($file->isFile() && $file->getExtension() === 'php') {
-                $filters[] = $file->getRealPath();
-            }
+            $filters[] = $file->getRealPath();
         }
 
         return $filters;
