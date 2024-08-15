@@ -9,6 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Config;
 use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
 use Meius\LaravelFilter\Services\Filter\FilterManager;
+use Meius\LaravelFilter\Services\Filter\FilterManagerInterface;
 
 class FilterManagerFactory
 {
@@ -17,7 +18,7 @@ class FilterManagerFactory
         private Application $app,
     ) {}
 
-    public function create(): FilterManager
+    public function create(): FilterManagerInterface
     {
         if ($this->filesystem->exists(Config::get('filter.cache.path'))) {
             return $this->app->make(CachedFilterManager::class);

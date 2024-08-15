@@ -31,6 +31,7 @@ class CachedFilterManager extends FilterManager
     /**
      * Apply the given filter to the specified models based on the request.
      */
+    #[\Override]
     public function apply(array $pathsToModels, Request $request): void
     {
         try {
@@ -64,6 +65,7 @@ class CachedFilterManager extends FilterManager
     /**
      * Get paths to all filter files.
      */
+    #[\Override]
     protected function pathsToFilters(): array
     {
         return $this->filterManager->pathsToFilters();

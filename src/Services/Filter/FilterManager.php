@@ -22,7 +22,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Manages the application and retrieval of filters for Eloquent models.
  */
-class FilterManager
+class FilterManager implements FilterManagerInterface
 {
     use Reflective;
 

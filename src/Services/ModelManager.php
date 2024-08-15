@@ -52,6 +52,24 @@ class ModelManager
     }
 
     /**
+     * Extract the namespace from a PHP file.
+     */
+    protected function getNamespaceFromFile(SplFileInfo $file): string
+    {
+        $contents = @file_get_contents($file->getPathname());
+
+        if ($contents === false) {
+            return '';
+        }
+
+        if (preg_match('/^namespace\s+(.+?);/m', $contents, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
+
+    /**
      * Check if a class exists with caching.
      */
     private function classExists(string $className): bool
@@ -73,23 +91,5 @@ class ModelManager
         }
 
         return self::$reflectionClassCache[$className];
-    }
-
-    /**
-     * Extract the namespace from a PHP file.
-     */
-    protected function getNamespaceFromFile(SplFileInfo $file): string
-    {
-        $contents = @file_get_contents($file->getPathname());
-
-        if ($contents === false) {
-            return '';
-        }
-
-        if (preg_match('/^namespace\s+(.+?);/m', $contents, $matches)) {
-            return $matches[1];
-        }
-
-        return '';
     }
 }
