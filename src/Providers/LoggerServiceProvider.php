@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Providers;
 
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
-use Meius\LaravelFilter\ControllerManager;
-use Meius\LaravelFilter\FilterManager;
+use Meius\LaravelFilter\Services\ControllerManager;
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 use Psr\Log\LoggerInterface;
 
 class LoggerServiceProvider extends ServiceProvider
@@ -22,8 +21,8 @@ class LoggerServiceProvider extends ServiceProvider
         ])
             ->needs(LoggerInterface::class)
             ->give(fn (): LoggerInterface => Log::build([
-                'driver' => 'single',
-                'path' => Storage::path('logs/filter/'.Carbon::now()->format('Y-m-d').'.log'),
+                'driver' => Config::get('filter.logger.driver'),
+                'path' => Config::get('filter.logger.path'),
             ]));
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Traits;
 
 use Illuminate\Support\Facades\App;
-use Meius\LaravelFilter\ControllerManager;
+use Meius\LaravelFilter\Services\ControllerManager;
 
 trait Filterable
 {

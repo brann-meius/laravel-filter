@@ -6,8 +6,8 @@ namespace Meius\LaravelFilter\Providers;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
-use Meius\LaravelFilter\ControllerManager;
-use Meius\LaravelFilter\FilterManager;
+use Meius\LaravelFilter\Services\ControllerManager;
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 
 class FilterServiceProvider extends ServiceProvider
 {

@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter;
+namespace Meius\LaravelFilter\Services;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Request;
 use Meius\LaravelFilter\Attributes\ApplyFiltersTo;
+use Meius\LaravelFilter\Factories\FilterManagerFactory;
 use Meius\LaravelFilter\Traits\Reflective;
 use Psr\Log\LoggerInterface;
 use ReflectionMethod;
@@ -18,7 +19,7 @@ final class ControllerManager
     private array $reflectionCache = [];
 
     public function __construct(
-        private FilterManager $filterManager,
+        private FilterManagerFactory $filterManagerFactory,
         private LoggerInterface $logger,
     ) {}
 
@@ -39,20 +40,14 @@ final class ControllerManager
             return;
         }
 
-        if ($this->filterManager->isCacheExist()) {
-            try {
-                $this->filterManager->applyFiltersFromCache($pathsToRequiredModels, Request::instance());
-
-                return;
-            } catch (\Throwable $exception) {
-                $this->logger->error('Failed to apply filters from cache.', [
-                    'exception' => $exception,
-                ]);
-            }
-        }
-
-        foreach ($this->filterManager->filters() as $filter) {
-            $this->filterManager->apply($filter, $pathsToRequiredModels, Request::instance());
+        try {
+            $this->filterManagerFactory
+                ->create()
+                ->apply($pathsToRequiredModels, Request::instance());
+        } catch (\Throwable $exception) {
+            $this->logger->error('Failed to apply filters.', [
+                'exception' => $exception,
+            ]);
         }
     }
 
@@ -61,7 +56,7 @@ final class ControllerManager
      */
     private function getReflectionMethod(Controller $context, string $method): ReflectionMethod
     {
-        $cacheKey = get_class($context).'::'.$method;
+        $cacheKey = $context::class.'::'.$method;
 
         if (!isset($this->reflectionCache[$cacheKey])) {
             $this->reflectionCache[$cacheKey] = new ReflectionMethod($context, $method);

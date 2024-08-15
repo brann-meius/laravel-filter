@@ -6,6 +6,7 @@ namespace Meius\LaravelFilter;
 
 use Illuminate\Filesystem\Filesystem;
 use InvalidArgumentException;
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 
 class FilterCreator
 {

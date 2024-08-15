@@ -11,6 +11,13 @@ use Meius\LaravelFilter\Console\FilterMakeCommand;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/filter.php', 'filter'
+        );
+    }
+
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {

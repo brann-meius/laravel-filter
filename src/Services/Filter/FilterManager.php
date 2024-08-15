@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter;
+namespace Meius\LaravelFilter\Services\Filter;
 
 use Generator;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 use Meius\LaravelFilter\Attributes\Setting;
 use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
@@ -26,64 +26,22 @@ class FilterManager
 {
     use Reflective;
 
-    private array $directoriesWithFilters = [];
-
-    private string $cachePath;
+    protected array $directoriesWithFilters = [];
 
     public function __construct(
-        private Filesystem $filesystem,
-        private Finder $finder,
-        private LoggerInterface $logger,
-    ) {
-        $this->cachePath = App::bootstrapPath('cache/filters.php');
-    }
+        protected Filesystem $filesystem,
+        protected Finder $finder,
+        protected LoggerInterface $logger,
+    ) {}
 
     /**
      * Apply the given filter to the specified models based on the request.
      */
-    public function apply(FilterInterface $filter, array $pathsToModels, Request $request): array
+    public function apply(array $pathsToModels, Request $request): void
     {
-        $reflection = new \ReflectionClass($filter);
-
-        if ($this->hasSettingAttributes($reflection)) {
-            $pathsToModels = $this->filterModelsByAttributes($reflection, $pathsToModels);
+        foreach ($this->filters() as $filter) {
+            $this->applyFilterToModels($filter, $this->filterModelsBySettings($pathsToModels, $filter), $request);
         }
-
-        $this->applyFilterToModels($filter, $pathsToModels, $request);
-
-        return $pathsToModels;
-    }
-
-    /**
-     * @param  class-string<Model>[]  $pathToModels
-     *
-     * @throws FileNotFoundException
-     */
-    public function applyFiltersFromCache(array $pathToModels, Request $request): void
-    {
-        $filters = $this->filesystem->requireOnce($this->cachePath);
-
-        foreach ($pathToModels as $pathToModel) {
-            if (empty($filters[$pathToModel])) {
-                continue;
-            }
-
-            foreach ($filters[$pathToModel] as $pathToFilter) {
-                $filter = $this->filter($pathToFilter);
-
-                if ($filter) {
-                    $this->apply($filter, [$pathToModel], $request);
-                }
-            }
-        }
-    }
-
-    /**
-     * Check if the cache file exists.
-     */
-    public function isCacheExist(): bool
-    {
-        return $this->filesystem->exists($this->cachePath);
     }
 
     /**
@@ -107,11 +65,31 @@ class FilterManager
      */
     public function addFiltersDirectory(string ...$paths): self
     {
-        foreach ($paths as $path) {
-            $this->directoriesWithFilters[] = $path;
-        }
+        $validPaths = array_filter($paths, 'is_dir');
+        $uniquePaths = array_unique($validPaths);
+        $this->directoriesWithFilters = array_merge($this->directoriesWithFilters, $uniquePaths);
 
         return $this;
+    }
+
+    /**
+     * Filter the given models based on the settings of the filter class.
+     *
+     * This method checks if the filter class has specific setting attributes.
+     * If it does, it filters the models accordingly using those attributes.
+     * Otherwise, it returns the original list of models.
+     *
+     * @return class-string<Model>[]
+     */
+    public function filterModelsBySettings(array $pathsToModels, FilterInterface $filter): array
+    {
+        $reflection = new \ReflectionClass($filter);
+
+        if ($this->hasSettingAttributes($reflection)) {
+            return $this->filterModelsByAttributes($reflection, $pathsToModels);
+        }
+
+        return $pathsToModels;
     }
 
     /**
@@ -119,7 +97,7 @@ class FilterManager
      */
     public function baseFilterDirectory(): string
     {
-        return App::path('Filters');
+        return Config::get('filter.path');
     }
 
     /**
@@ -161,20 +139,6 @@ class FilterManager
     }
 
     /**
-     * Get paths to all filter files.
-     */
-    protected function pathsToFilters(): array
-    {
-        $pathsToFilters = [];
-
-        foreach ($this->directoriesWithFilters as $path) {
-            $pathsToFilters = array_merge($pathsToFilters, $this->pullOutFiltersPaths($path));
-        }
-
-        return $pathsToFilters;
-    }
-
-    /**
      * Filter the given models based on the attributes of the filter class.
      *
      * This method checks for `OnlyFor` and `ExcludeFor` attributes on the filter class
@@ -195,21 +159,21 @@ class FilterManager
     }
 
     /**
-     * Check if the filter class has setting attributes.
+     * Get paths to all filter files.
      */
-    private function hasSettingAttributes(\ReflectionClass $reflection): bool
+    protected function pathsToFilters(): array
     {
-        return ! empty($reflection->getAttributes(Setting::class, ReflectionAttribute::IS_INSTANCEOF));
+        return $this->pullOutFiltersPaths($this->getDirectoriesWithFilters());
     }
 
     /**
      * Recursively retrieve paths to filter files in the given directory.
      */
-    private function pullOutFiltersPaths(string $path): array
+    final protected function pullOutFiltersPaths(array $paths): array
     {
         $filters = [];
         $this->finder->files()
-            ->in($path)
+            ->in($paths)
             ->name('*.php');
 
         foreach ($this->finder as $file) {
@@ -222,10 +186,18 @@ class FilterManager
     /**
      * Apply the filter to the specified models.
      */
-    private function applyFilterToModels(FilterInterface $filter, array $pathsToModels, Request $request): void
+    final protected function applyFilterToModels(FilterInterface $filter, array $pathsToModels, Request $request): void
     {
         foreach ($pathsToModels as $pathToModel) {
             $filter->create($pathToModel)->apply($request);
         }
+    }
+
+    /**
+     * Check if the filter class has setting attributes.
+     */
+    final protected function hasSettingAttributes(\ReflectionClass $reflection): bool
+    {
+        return ! empty($reflection->getAttributes(Setting::class, ReflectionAttribute::IS_INSTANCEOF));
     }
 }

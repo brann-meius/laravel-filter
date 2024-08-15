@@ -6,7 +6,7 @@ namespace Meius\LaravelFilter\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 
 class FilterClearCommand extends Command
 {
@@ -16,9 +16,15 @@ class FilterClearCommand extends Command
 
     public function handle(Filesystem $filesystem): int
     {
-        $filesystem->delete(
-            App::bootstrapPath('cache/filters.php')
-        );
+        try {
+            $filesystem->delete(
+                Config::get('filter.cache.path')
+            );
+        } catch (\Throwable $exception) {
+            $this->components->error('Failed to clear filters cache file: '.$exception->getMessage());
+
+            return self::FAILURE;
+        }
 
         $this->components->info('Filters cache cleared successfully.');
 

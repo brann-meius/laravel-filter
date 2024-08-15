@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter;
+namespace Meius\LaravelFilter\Services;
 
-use Symfony\Component\Finder\Finder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 use SplFileInfo;
+use Symfony\Component\Finder\Finder;
 
 class ModelManager
 {
