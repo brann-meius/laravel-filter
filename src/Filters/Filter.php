@@ -26,12 +26,11 @@ abstract class Filter implements FilterInterface
      */
     abstract protected function query(Builder $builder, $value): Builder;
 
-    /**
-     * Create a new filter instance.
-     */
-    public function create(string $pathToModel): self
+    public function __invoke(string $pathToModel, Request $request): self
     {
         $this->model = App::make($pathToModel);
+
+        $this->apply($request);
 
         return $this;
     }

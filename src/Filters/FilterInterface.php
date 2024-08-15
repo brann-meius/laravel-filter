@@ -8,5 +8,7 @@ use Illuminate\Http\Request;
 
 interface FilterInterface
 {
+    public function __invoke(string $pathToModel, Request $request): self;
+
     public function apply(Request $request): void;
 }

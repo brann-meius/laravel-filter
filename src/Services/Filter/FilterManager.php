@@ -189,7 +189,7 @@ class FilterManager implements FilterManagerInterface
     final protected function applyFilterToModels(FilterInterface $filter, array $pathsToModels, Request $request): void
     {
         foreach ($pathsToModels as $pathToModel) {
-            $filter->create($pathToModel)->apply($request);
+            $filter($pathToModel, $request);
         }
     }
 

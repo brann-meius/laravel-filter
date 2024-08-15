@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Meius\LaravelFilter\Services\ControllerManager;
+use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
 use Meius\LaravelFilter\Services\Filter\FilterManager;
 use Psr\Log\LoggerInterface;
 
@@ -17,6 +18,7 @@ class LoggerServiceProvider extends ServiceProvider
     {
         $this->app->when([
             FilterManager::class,
+            CachedFilterManager::class,
             ControllerManager::class,
         ])
             ->needs(LoggerInterface::class)

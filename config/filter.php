@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Storage;
 
 return [
 
@@ -45,6 +44,6 @@ return [
 
     'logger' => [
         'driver' => 'single',
-        'path' => Storage::path('logs/filter/'.Carbon::now()->format('Y-m-d').'.log'),
+        'path' => App::storagePath('logs/filter/'.Carbon::now()->format('Y-m-d').'.log'),
     ],
 ];
