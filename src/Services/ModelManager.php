@@ -36,13 +36,12 @@ class ModelManager
 
         /** @var SplFileInfo $file */
         foreach ($this->finder as $file) {
-            $namespace = $this->getNamespaceFromFile($file);
-            $className = $namespace.'\\'.$file->getBasename('.php');
+            $className = $this->getClassNameFromFile($file);
 
-            if ($this->classExists($className)) {
+            if ($this->isClassExists($className)) {
                 $reflectionClass = $this->getReflectionClass($className);
 
-                if ($reflectionClass->isSubclassOf(Model::class) && ! $reflectionClass->isAbstract()) {
+                if ($this->isEloquentModel($reflectionClass)) {
                     $models[] = $className;
                 }
             }
@@ -52,9 +51,26 @@ class ModelManager
     }
 
     /**
+     * Get the class name from a file.
+     */
+    private function getClassNameFromFile(SplFileInfo $file): string
+    {
+        $namespace = $this->extractNamespaceFromFile($file);
+        return $namespace.'\\'.$file->getBasename('.php');
+    }
+
+    /**
+     * Check if a reflection class is an Eloquent model.
+     */
+    private function isEloquentModel(\ReflectionClass $reflectionClass): bool
+    {
+        return $reflectionClass->isSubclassOf(Model::class) && ! $reflectionClass->isAbstract();
+    }
+
+    /**
      * Extract the namespace from a PHP file.
      */
-    protected function getNamespaceFromFile(SplFileInfo $file): string
+    private function extractNamespaceFromFile(SplFileInfo $file): string
     {
         $contents = @file_get_contents($file->getPathname());
 
@@ -72,7 +88,7 @@ class ModelManager
     /**
      * Check if a class exists with caching.
      */
-    private function classExists(string $className): bool
+    private function isClassExists(string $className): bool
     {
         if (!isset(self::$classExistsCache[$className])) {
             self::$classExistsCache[$className] = class_exists($className);
