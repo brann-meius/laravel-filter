@@ -47,3 +47,4 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
+          token: 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
