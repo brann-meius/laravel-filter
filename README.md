@@ -1,5 +1,7 @@
 # Laravel Filter Package
 
+[![Build Status](https://img.shields.io/github/actions/workflow/status/brann-meius/laravel-filter/ci.yml)](https://github.com/brann-meius/laravel-filter/actions)
+[![Coverage Status](https://img.shields.io/codecov/c/github/brann-meius/laravel-filter)](https://codecov.io/gh/brann-meius/laravel-filter)
 [![License](https://img.shields.io/github/license/brann-meius/laravel-filter)](LICENSE)
 
 ## Table of Contents
@@ -91,10 +93,34 @@ To get started with the `meius/laravel-filter` package, follow the installation 
     {
         use Filterable;
 
-        #[ApplyFiltersTo(Post::class, ...Models)]
+        #[ApplyFiltersTo(Post::class)]
         public function index()
         {
-            // Your method logic
+            return Post::query()->get();
+        }
+    }
+    ```
+
+3. To apply filters to related models, use the `ApplyFiltersTo` attribute with multiple model classes:
+    ```php
+    use App\Attributes\Filter\ApplyFiltersTo;
+    use App\Models\Author;
+    use App\Models\Comment;
+    use App\Models\Post;
+
+    class PostController
+    {
+        use Filterable;
+
+        #[ApplyFiltersTo(Post::class, Comment::class, Author::class)]
+        public function index()
+        {
+            return Post::query()
+                ->with([
+                    'comments', 
+                    'author',
+                ])
+                ->get();
         }
     }
     ```
@@ -166,7 +192,7 @@ Here is an example of how to define and apply filters:
 
         protected function canContinue(Request $request): bool
         {
-            return $request->user()->verified();
+            return $request->user()->hasSubscription();
         }
     };
     ```
@@ -178,11 +204,12 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
 1. Create a filter with `ExcludeFor`:
     ```php
     use App\Models\User;
+    use App\Models\Category;
     use Meius\LaravelFilter\Attributes\ExcludeFor;
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will never be applied to the "User" model and beyond.
-    return new #[ExcludeFor(User::class, ...Models)] class extends Filter
+    return new #[ExcludeFor(User::class, Category::class, ...)] class extends Filter
     {
         /**
          * The key used to identify the filter parameter in the request.
@@ -199,11 +226,12 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
 2. Create a filter with `OnlyFor`:
     ```php
     use App\Models\Post;
+    use App\Models\Comment;
     use Meius\LaravelFilter\Attributes\OnlyFor;
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will be applied to the "Post" model and beyond only.
-    return new #[OnlyFor(Post::class, ...Models)] class extends Filter
+    return new #[OnlyFor(Post::class, Comment::class, ...)] class extends Filter
     {
         /**
          * The key used to identify the filter parameter in the request.
@@ -284,6 +312,8 @@ You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply fil
     ```
 
 ## Examples for Other Databases
+
+Using the `query` method, you can create filters for different databases.
 
 ### PostgreSQL
 
