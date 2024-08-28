@@ -25,7 +25,7 @@ class CachedFilterManager extends FilterManager
     ) {
         parent::__construct($filesystem, $finder, $logger);
 
-        $this->cachePath = Config::get('filter.cache.path');
+        $this->cachePath = Config::get('filter.cache.path', '');
     }
 
     /**
