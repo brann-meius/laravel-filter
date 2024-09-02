@@ -37,11 +37,10 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse src tests
 
-      - name: Run tests
-        run: ./vendor/bin/phpunit --log-junit junit.xml
+      - name: Run tests and collect coverage
+        run: ./vendor/bin/phpunit --coverage-clover coverage.xml .
 
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
