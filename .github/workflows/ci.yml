@@ -35,7 +35,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse src config tests
 
       - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
@@ -48,4 +48,4 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          
+
