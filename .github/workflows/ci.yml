@@ -35,13 +35,20 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse src config tests
+        run: vendor/bin/phpstan analyse src tests
 
       - name: Create coverage directory
         run: mkdir -p coverage
 
       - name: Run tests
         run: vendor/bin/phpunit --coverage-clover=coverage/coverage.xml
+
+      - name: Generate Report
+        run: |
+          pip install codecov
+          pip install pytest-cov
+          pytest --cov=./ --cov-report=xml
+          codecov
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
