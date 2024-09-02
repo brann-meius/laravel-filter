@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Meius\LaravelFilter\Exceptions\InvalidModelException;
 
 #[\Attribute]
-abstract class Setting
+class Setting
 {
     /**
      * Create a new attribute instance.
