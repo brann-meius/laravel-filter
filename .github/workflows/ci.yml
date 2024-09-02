@@ -27,7 +27,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.0'
-          extensions: mbstring, xml, json, pdo_mysql
+          extensions: mbstring, xml, json, pdo_mysql, xdebug
           ini-values: post_max_size=256M, upload_max_filesize=256M
           coverage: xdebug
 
@@ -37,15 +37,17 @@ jobs:
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse src config tests
 
+      - name: Create coverage directory
+        run: mkdir -p coverage
+
       - name: Run tests
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --coverage-clover=coverage/coverage.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
-          files: coverage.xml
+          files: coverage/coverage.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
-
