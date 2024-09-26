@@ -61,4 +61,12 @@ class CachedFilterManager extends FilterManager
             }
         }
     }
+
+    /**
+     * Get paths to all filter files.
+     */
+    protected function pathsToFilters(): array
+    {
+        return $this->filterManager->pathsToFilters();
+    }
 }
