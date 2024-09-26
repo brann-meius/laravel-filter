@@ -1,12 +1,8 @@
-name: Laravel Filter CI
+name: Run Tests and Upload Coverage on Main
 
 on:
   push:
     branches:
-      - develop
-  pull_request:
-    branches:
-      - develop
       - main
 
 jobs:
