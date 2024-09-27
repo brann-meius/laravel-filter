@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  */
 class LoggerServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function boot(): void
     {
         $this->app->when([
             FilterManager::class,
