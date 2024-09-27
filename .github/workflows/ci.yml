@@ -1,7 +1,6 @@
-name: CI Workflow
+name: Laravel-Filter CI Workflow
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
