@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Providers;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Log\LogManager;
 use Illuminate\Support\ServiceProvider;
 use Meius\LaravelFilter\Services\ControllerManager;
 use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
@@ -17,7 +18,7 @@ use Psr\Log\LoggerInterface;
  */
 class LoggerServiceProvider extends ServiceProvider
 {
-    public function boot(): void
+    public function register(): void
     {
         $this->app->when([
             FilterManager::class,
@@ -25,9 +26,13 @@ class LoggerServiceProvider extends ServiceProvider
             ControllerManager::class,
         ])
             ->needs(LoggerInterface::class)
-            ->give(fn (): LoggerInterface => Log::build([
-                'driver' => Config::get('filter.logger.driver'),
-                'path' => Config::get('filter.logger.path'),
-            ]));
+            ->give(function (Application $app) {
+                $logManager = new LogManager($app);
+
+                return $logManager->build([
+                    'driver' => Config::get('filter.logger.driver'),
+                    'path' => Config::get('filter.logger.path'),
+                ]);
+            });
     }
 }
