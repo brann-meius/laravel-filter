@@ -9,7 +9,10 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class FinderHelper
 {
-    public function __construct(private Finder $finder) {}
+    public function __construct(private Finder $finder)
+    {
+        //
+    }
 
     /**
      * Configure the Finder instance to search for PHP filter files.
@@ -26,7 +29,7 @@ class FinderHelper
      */
     public function getNamespace(SplFileInfo $file): string
     {
-        return $this->extractNamespaceFromFile($file).'\\'.$file->getBasename('.php');
+        return $this->extractNamespaceFromFile($file) . '\\' . $file->getBasename('.php');
     }
 
     /**

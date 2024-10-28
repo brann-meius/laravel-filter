@@ -13,7 +13,8 @@ use Meius\LaravelFilter\Traits\Filters\FilterPathUtilities;
 
 abstract class Filter implements FilterInterface
 {
-    use FilterCriteria, FilterPathUtilities;
+    use FilterCriteria;
+    use FilterPathUtilities;
 
     protected Model $model;
 

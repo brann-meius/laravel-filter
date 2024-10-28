@@ -17,7 +17,9 @@ class FilterManagerFactory
     public function __construct(
         private Filesystem $filesystem,
         private Application $app,
-    ) {}
+    ) {
+        //
+    }
 
     /**
      * @throws BindingResolutionException

@@ -17,7 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/filter.php', 'filter'
+            __DIR__ . '/../../config/filter.php',
+            'filter'
         );
     }
 

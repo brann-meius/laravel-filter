@@ -59,8 +59,7 @@ class CachedFilterManager extends FilterManager
         }
 
         foreach ($filters[$model] as $filter) {
-            $this->applyFilterToModels(new $filter, [$model], $request);
+            $this->applyFilterToModels(new $filter(), [$model], $request);
         }
     }
-
 }

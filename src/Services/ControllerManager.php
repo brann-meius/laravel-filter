@@ -19,7 +19,11 @@ class ControllerManager
 {
     use Reflective;
 
-    public function __construct(private FilterManagerFactory $filterManagerFactory) {}
+    public function __construct(
+        private FilterManagerFactory $filterManagerFactory
+    ) {
+        //
+    }
 
     /**
      * Handle the application of filters to the specified controller method.

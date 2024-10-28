@@ -16,7 +16,10 @@ use ReflectionException;
 
 class FilterManager implements FilterManagerInterface
 {
-    public function __construct(protected FinderHelper $splFileInfoHelper) {}
+    public function __construct(protected FinderHelper $splFileInfoHelper)
+    {
+        //
+    }
 
     public function apply(array $models, Request $request): void
     {
@@ -31,7 +34,7 @@ class FilterManager implements FilterManagerInterface
             $filter = $this->splFileInfoHelper->getNamespace($file);
 
             if ($this->isValidFilterClass($filter)) {
-                yield new $filter;
+                yield new $filter();
             }
         }
     }

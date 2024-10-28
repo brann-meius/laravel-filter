@@ -22,6 +22,10 @@
       "Meius\\LaravelFilter\\Tests\\": "tests/"
     }
   },
+  "scripts": {
+    "test": "phpunit",
+    "cs": "phpcs --standard=phpcs.xml"
+  },
   "authors": [
     {
       "name": "Bohdan Meius",
@@ -43,7 +47,8 @@
     "phpstan/phpstan": "^1 || ^2",
     "friendsofphp/php-cs-fixer": "*",
     "phpunit/phpunit": "^9.6 || ^10",
-    "orchestra/testbench": "^7 || ^8 || ^9"
+    "orchestra/testbench": "^7 || ^8 || ^9",
+    "squizlabs/php_codesniffer": "4.0.x-dev"
   },
   "extra": {
     "laravel": {

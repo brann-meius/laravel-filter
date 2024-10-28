@@ -15,7 +15,11 @@ class ModelManager
     private static array $classExistsCache = [];
     private static array $reflectionClassCache = [];
 
-    public function __construct(private FinderHelper $finderHelper) {}
+    public function __construct(
+        private FinderHelper $finderHelper
+    ) {
+        //
+    }
 
     /**
      * Get all Eloquent models in the application.

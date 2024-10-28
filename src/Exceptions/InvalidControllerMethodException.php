@@ -6,4 +6,7 @@ namespace Meius\LaravelFilter\Exceptions;
 
 use ReflectionException;
 
-class InvalidControllerMethodException extends ReflectionException {}
+class InvalidControllerMethodException extends ReflectionException
+{
+    //
+}

@@ -22,7 +22,7 @@ class FilterClearCommand extends Command
                 Config::get('filter.cache.path')
             );
         } catch (\Throwable $exception) {
-            $this->components->error('Failed to clear filters cache file: '.$exception->getMessage());
+            $this->components->error('Failed to clear filters cache file: ' . $exception->getMessage());
 
             return self::FAILURE;
         }

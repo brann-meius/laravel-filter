@@ -12,4 +12,7 @@ use Meius\LaravelFilter\Attributes\Setting;
  * Used to annotate classes that should be excluded from filtering.
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class ExcludeFrom extends Setting {}
+class ExcludeFrom extends Setting
+{
+    //
+}
