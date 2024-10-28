@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Filters;
 
-use Illuminate\Database\Eloquent\Model;
 use Meius\LaravelFilter\Filters\FilterInterface;
 use Meius\LaravelFilter\Tests\Support\Filters\IdFilter;
 use Meius\LaravelFilter\Tests\Support\Models\User;
@@ -23,7 +22,7 @@ class FilterTest extends TestCase
     {
         $this->invokeInitializeModel('App\Models\NonExistentModel');
 
-        $this->assertEmpty(Model::getAllGlobalScopes());
+        $this->assertEmpty(User::getAllGlobalScopes());
     }
 
     protected function invokeInitializeModel(string $model): void
