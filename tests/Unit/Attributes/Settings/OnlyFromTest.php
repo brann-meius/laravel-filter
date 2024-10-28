@@ -6,7 +6,7 @@ namespace Meius\LaravelFilter\Tests\Unit\Attributes\Settings;
 
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
 
-class OnlyForTest extends ExcludeForTestAttribute
+class OnlyFromTest extends ExcludeFromTestAttribute
 {
     protected string $attribute = OnlyFor::class;
 }

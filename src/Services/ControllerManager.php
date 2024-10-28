@@ -4,31 +4,39 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Services;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Request;
 use Meius\LaravelFilter\Attributes\ApplyFiltersTo;
+use Meius\LaravelFilter\Exceptions\InvalidControllerMethodException;
+use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
 use Meius\LaravelFilter\Traits\Reflective;
-use Psr\Log\LoggerInterface;
+use ReflectionException;
 use ReflectionMethod;
 
-final class ControllerManager
+class ControllerManager
 {
     use Reflective;
 
-    private array $reflectionCache = [];
-
-    public function __construct(
-        private FilterManagerFactory $filterManagerFactory,
-        private LoggerInterface $logger,
-    ) {}
+    public function __construct(private FilterManagerFactory $filterManagerFactory) {}
 
     /**
      * Handle the application of filters to the specified controller method.
+     *
+     * @throws InvalidControllerMethodException
+     * @throws InvalidFilterBindingException
      */
     public function handle(Controller $context, string $method): void
     {
-        $reflectionMethod = $this->getReflectionMethod($context, $method);
+        try {
+            $reflectionMethod = $this->getReflectionMethod($context, $method);
+        } catch (ReflectionException $exception) {
+            throw new InvalidControllerMethodException(
+                message: 'Failed to retrieve reflection method for controller method.',
+                previous: $exception
+            );
+        }
 
         // Check if an attribute exists.
         if (empty($reflectionAttributes = $reflectionMethod->getAttributes(ApplyFiltersTo::class))) {
@@ -36,32 +44,29 @@ final class ControllerManager
         }
 
         // Check if attributes contain models.
-        if (empty($pathsToRequiredModels = $this->parseAttributes($reflectionAttributes))) {
+        if (empty($models = $this->parseAttributes($reflectionAttributes))) {
             return;
         }
 
         try {
             $this->filterManagerFactory
                 ->create()
-                ->apply($pathsToRequiredModels, Request::instance());
-        } catch (\Throwable $exception) {
-            $this->logger->error('Failed to apply filters.', [
-                'exception' => $exception,
-            ]);
+                ->apply($models, Request::instance());
+        } catch (BindingResolutionException $exception) {
+            throw new InvalidFilterBindingException(
+                message: 'Failed to resolve filter manager instance.',
+                previous: $exception
+            );
         }
     }
 
     /**
      * Retrieve the reflection method for the specified controller method.
+     *
+     * @throws ReflectionException
      */
     private function getReflectionMethod(Controller $context, string $method): ReflectionMethod
     {
-        $cacheKey = $context::class.'::'.$method;
-
-        if (!isset($this->reflectionCache[$cacheKey])) {
-            $this->reflectionCache[$cacheKey] = new ReflectionMethod($context, $method);
-        }
-
-        return $this->reflectionCache[$cacheKey];
+        return new ReflectionMethod($context, $method);
     }
 }

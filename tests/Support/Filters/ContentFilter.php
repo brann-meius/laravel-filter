@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Builder;
-use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
-use Meius\LaravelFilter\Filters\Filter;
-use Meius\LaravelFilter\Tests\Support\Http\Models\User;
+namespace Meius\LaravelFilter\Tests\Support\Filters;
 
-return new #[ExcludeFor(User::class)] class extends Filter
+use Illuminate\Database\Eloquent\Builder;
+use Meius\LaravelFilter\Attributes\Settings\ExcludeFrom;
+use Meius\LaravelFilter\Filters\Filter;
+use Meius\LaravelFilter\Tests\Support\Models\User;
+
+#[ExcludeFrom(User::class)]
+class ContentFilter extends Filter
 {
     protected string $key = 'content';
 
@@ -15,4 +18,4 @@ return new #[ExcludeFor(User::class)] class extends Filter
     {
         return $builder->where('content', 'LIKE', "%$value%");
     }
-};
+}

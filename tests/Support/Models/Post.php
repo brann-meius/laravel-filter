@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter\Tests\Support\Http\Models;
+namespace Meius\LaravelFilter\Tests\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class Post extends Model
 {
-    protected $table = 'comments';
+    protected $table = 'posts';
 
     protected $fillable = [
         'id',
         'user_id',
-        'post_id',
+        'title',
         'content',
         'created_at',
         'updated_at',

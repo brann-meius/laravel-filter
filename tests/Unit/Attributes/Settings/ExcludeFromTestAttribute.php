@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Attributes\Settings;
 
-use Meius\LaravelFilter\Attributes\Settings\ExcludeFor;
+use Meius\LaravelFilter\Attributes\Settings\ExcludeFrom;
 use Meius\LaravelFilter\Tests\Unit\Attributes\TestAttribute;
 
-class ExcludeForTestAttribute extends TestAttribute
+class ExcludeFromTestAttribute extends TestAttribute
 {
-    protected string $attribute = ExcludeFor::class;
+    protected string $attribute = ExcludeFrom::class;
 
     public function testAnnotationUsage(): void
     {

@@ -4,24 +4,15 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Attributes;
 
-use Illuminate\Database\Eloquent\Model;
 use Meius\LaravelFilter\Attributes\Setting;
 use Meius\LaravelFilter\Exceptions\InvalidModelException;
 use Meius\LaravelFilter\Tests\Support\Http\Controllers\UserController;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 
 abstract class TestAttribute extends TestCase
 {
-    protected Model $model;
-
     protected string $attribute;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->model = new class extends Model {};
-    }
 
     public function testIsAttribute(): void
     {
@@ -46,7 +37,7 @@ abstract class TestAttribute extends TestCase
 
     public function testAcceptsModel(): void
     {
-        new $this->attribute($this->model::class);
+        new $this->attribute(User::class);
         $this->assertTrue(true);
     }
 

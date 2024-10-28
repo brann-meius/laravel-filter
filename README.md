@@ -15,11 +15,10 @@
     - [Applying Filters](#applying-filters)
     - [Caching Filters](#caching-filters)
     - [Example](#example)
-    - [Using `ExcludeFor` and `OnlyFor` Attributes](#using-excludefor-and-onlyfor-attributes)
+    - [Using `ExcludeFrom` and `OnlyFor` Attributes](#using-excludefrom-and-onlyfor-attributes)
     - [Example Request Structure](#example-request-structure)
     - [Advanced Usage](#advanced-usage)
 - [Examples for Other Databases](#examples-for-other-databases)
-- [Extending Logic](#extending-logic)
 - [Support](#support)
 - [License](#license)
 
@@ -180,19 +179,19 @@ Here is an example of how to define and apply filters:
     };
     ```
 
-### Using `ExcludeFor` and `OnlyFor` Attributes
+### Using `ExcludeFrom` and `OnlyFor` Attributes
 
-You can use the `ExcludeFor` and `OnlyFor` attributes to conditionally apply filters.
+You can use the `ExcludeFrom` and `OnlyFor` attributes to conditionally apply filters.
 
-1. Create a filter with `ExcludeFor`:
+1. Create a filter with `ExcludeFrom`:
     ```php
     use App\Models\User;
     use App\Models\Category;
-    use Meius\LaravelFilter\Attributes\ExcludeFor;
+    use Meius\LaravelFilter\Attributes\ExcludeFrom;
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will never be applied to the "User" model and beyond.
-    return new #[ExcludeFor(User::class, Category::class, ...)] class extends Filter
+    return new #[ExcludeFrom(User::class, Category::class, ...)] class extends Filter
     {
         /**
          * The key used to identify the filter parameter in the request.
@@ -332,37 +331,6 @@ Using the `query` method, you can create filters for different databases.
             return $builder->where('title', 'like', "%{$value}%");
         }
     };
-    ```
-
-## Extending Logic
-
-### Adding Filter Directories
-
-1. Create a custom service provider by extending `FilterServiceProvider`:
-    ```php
-    <?php
-
-    namespace App\Providers;
-
-    use Meius\LaravelFilter\Providers\FilterServiceProvider;
-
-    class CustomFilterServiceProvider extends FilterServiceProvider
-    {
-        protected function discoverFiltersWithin(): array
-        {
-            return [
-                app_path('path'),
-            ];
-        }
-    }
-    ```
-
-2. Register the custom service provider in `config/app.php`:
-    ```php
-    'providers' => [
-        // Other service providers
-        App\Providers\CustomFilterServiceProvider::class,
-    ],
     ```
 
 ## Support

@@ -4,65 +4,66 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services;
 
-use Illuminate\Support\Facades\App;
+use Meius\LaravelFilter\Helpers\FinderHelper;
 use Meius\LaravelFilter\Services\ModelManager;
-use Meius\LaravelFilter\Tests\Support\Http\Models\Comment;
-use Meius\LaravelFilter\Tests\Support\Http\Models\Post;
-use Meius\LaravelFilter\Tests\Support\Http\Models\User;
+use Meius\LaravelFilter\Tests\Support\Models\Comment;
+use Meius\LaravelFilter\Tests\Support\Models\Post;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
-use Mockery;
 use Mockery\MockInterface;
-use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
 class ModelManagerTest extends TestCase
 {
     public function testReturnsAllEloquentModels(): void
     {
-        App::partialMock()
-            ->shouldReceive('path')
-            ->andReturn(__DIR__ . '/../../Support/');
+        $this->moveModels();
+        $modelManager = $this->getModelManager();
 
-        /** @var ModelManager $modelManager */
-        $modelManager = $this->app->make(ModelManager::class);
-
-        $this->assertTrue(in_array(User::class, $modelManager->get()));
-        $this->assertTrue(in_array(Comment::class, $modelManager->get()));
-        $this->assertTrue(in_array(Post::class, $modelManager->get()));
-        $this->assertFalse(in_array(\ModelWithoutNamespace::class, $modelManager->get()));
+        $this->assertTrue(in_array(User::class, $modelManager->getModels()));
+        $this->assertTrue(in_array(Comment::class, $modelManager->getModels()));
+        $this->assertTrue(in_array(Post::class, $modelManager->getModels()));
     }
 
     public function testReturnsEmptyArrayWhenNoModelsFound(): void
     {
-        /** @var ModelManager $modelManager */
-        $modelManager = $this->app->make(ModelManager::class);
+        $modelManager = $this->getModelManager();
 
-        $this->assertEmpty($modelManager->get());
+        $this->assertEmpty($modelManager->getModels());
     }
 
     public function testSkipsNonEloquentClasses(): void
     {
-        App::partialMock()
-            ->shouldReceive('path')
-            ->andReturn(__DIR__ . '/../../Support/');
+        $this->moveModels('/Support/ModelsWithoutNamespace');
+        $modelManager = $this->getModelManager();
 
-        $this->partialMock(Finder::class, function (MockInterface $mock) {
-            $mock->shouldReceive('getIterator')
-                ->andReturn(new \ArrayIterator([
-                    Mockery::mock(SplFileInfo::class, function (MockInterface $mock): void {
-                        $mock->shouldReceive('getPathname')
-                            ->andReturn(__DIR__ . '/../../Support/NonEloquentClass.php');
-                        $mock->shouldReceive('getBasename')
-                            ->with('.php')
-                            ->andReturn('NonEloquentClass.php');
-                    }),
-                    new SplFileInfo(\ModelWithoutNamespace::class),
-                ]));
+        $this->assertEmpty($modelManager->getModels());
+    }
+
+    public function testModelDoesNotExist(): void
+    {
+        $this->moveModels();
+        $this->mock(FinderHelper::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('configureFinderFiles')
+                ->andReturn(
+                    Finder::create()
+                        ->files()
+                        ->in($this->app->path())
+                );
+            $mock->shouldReceive('getNamespace')
+                ->andReturn('App\Models\NonExistentModel' . uniqid());
         });
 
+        $modelManager = $this->getModelManager();
+
+        $this->assertEmpty($modelManager->getModels());
+    }
+
+    protected function getModelManager(): ModelManager
+    {
         /** @var ModelManager $modelManager */
         $modelManager = $this->app->make(ModelManager::class);
 
-        $this->assertEmpty($modelManager->get());
+        return $modelManager;
     }
 }

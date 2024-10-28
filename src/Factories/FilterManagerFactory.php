@@ -24,10 +24,27 @@ class FilterManagerFactory
      */
     public function create(): FilterManagerInterface
     {
-        if ($this->filesystem->exists(Config::get('filter.cache.path'))) {
-            return $this->app->make(CachedFilterManager::class);
-        }
+        return $this->app->make($this->getManager());
+    }
 
-        return $this->app->make(FilterManager::class);
+    /**
+     * Determine the appropriate filter manager class to use.
+     *
+     * @return class-string<FilterManagerInterface>
+     */
+    protected function getManager(): string
+    {
+        return match ($this->hasCache()) {
+            true => CachedFilterManager::class,
+            false => FilterManager::class,
+        };
+    }
+
+    /**
+     * Check if the filter cache exists.
+     */
+    protected function hasCache(): bool
+    {
+        return $this->filesystem->exists(Config::get('filter.cache.path'));
     }
 }

@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Meius\LaravelFilter\Tests\Support\Filters;
+
 use Illuminate\Database\Eloquent\Builder;
 use Meius\LaravelFilter\Filters\Filter;
 
-return new class extends Filter
+class IdFilter extends Filter
 {
     protected string $key = 'id';
 
@@ -13,4 +15,4 @@ return new class extends Filter
     {
         return $builder->where('id', '=', $value);
     }
-};
+}

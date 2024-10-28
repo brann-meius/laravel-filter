@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Console;
 
-use Illuminate\Database\Eloquent\Builder;
-use Meius\LaravelFilter\Filters\Filter;
 use Meius\LaravelFilter\Providers\AppServiceProvider;
+use Meius\LaravelFilter\Tests\Support\Filters\ContentFilter;
+use Meius\LaravelFilter\Tests\Support\Filters\CreatedAtFilter;
+use Meius\LaravelFilter\Tests\Support\Filters\IdFilter;
+use Meius\LaravelFilter\Tests\Support\Filters\TitleFilter;
+use Meius\LaravelFilter\Tests\Support\Filters\UpdatedAtFilter;
+use Meius\LaravelFilter\Tests\Support\Models\Comment;
+use Meius\LaravelFilter\Tests\Support\Models\Post;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 use Illuminate\Filesystem\Filesystem;
 use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
@@ -28,9 +34,11 @@ class FilterCacheCommandTest extends TestCase
                 ->andReturn($this->filters());
             $mock->shouldReceive('filterModelsBySettings')
                 ->andReturn($this->models());
+            $mock->shouldReceive('getModels')
+                ->andReturn($this->models());
         });
 
-        $this->artisan(FilterCacheCommand::class)
+        $this->artisan('filter:cache')
             ->expectsOutputToContain('Filters cached successfully.')
             ->assertSuccessful();
     }
@@ -78,7 +86,7 @@ class FilterCacheCommandTest extends TestCase
         });
 
         $this->mock(ModelManager::class, function (MockInterface $mock): void {
-            $mock->shouldReceive('get')
+            $mock->shouldReceive('getModels')
                 ->andReturn($this->models());
         });
     }
@@ -86,29 +94,20 @@ class FilterCacheCommandTest extends TestCase
     private function models(): array
     {
         return [
-          'App\Models\Model1',
-          'App\Models\Model2',
+            Comment::class,
+            Post::class,
+            User::class,
         ];
     }
 
     private function filters(): \Generator
     {
-        $filter = function (): Filter {
-            return new class extends Filter {
-                protected function query(Builder $builder, $value): Builder
-                {
-                    $operator = array_rand(['=', '!=', '>', '<', '>=', '<=']);
-
-                    return $builder->where('column', $operator, $value);
-                }
-            };
-        };
-
         yield from [
-            $filter(),
-            $filter(),
-            $filter(),
-            $filter(),
+            new ContentFilter(),
+            new CreatedAtFilter(),
+            new IdFilter(),
+            new TitleFilter(),
+            new UpdatedAtFilter(),
         ];
     }
 
