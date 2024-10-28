@@ -18,4 +18,9 @@ class User extends Model
         'created_at',
         'updated_at',
     ];
+
+    public static function getAllGlobalScopes()
+    {
+        return static::$globalScopes;
+    }
 }
