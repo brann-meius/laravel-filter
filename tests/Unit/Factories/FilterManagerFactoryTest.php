@@ -15,14 +15,12 @@ use Mockery\MockInterface;
 
 class FilterManagerFactoryTest extends TestCase
 {
-    private FilterManagerFactory $factory;
-
     /**
      * @throws BindingResolutionException
      */
     public function testFilterManagerIsCreatedWhenCacheFileExists(): void
     {
-        $this->assertInstanceOf(CachedFilterManager::class, $this->factory->create());
+        $this->assertInstanceOf(CachedFilterManager::class, $this->getFactory()->create());
     }
 
     /**
@@ -30,37 +28,45 @@ class FilterManagerFactoryTest extends TestCase
      */
     public function testFilterManagerIsCreatedWhenCacheFileDoesNotExist(): void
     {
-        $this->assertInstanceOf(FilterManager::class, $this->factory->create());
+        $this->assertInstanceOf(FilterManager::class, $this->getFactory()->create());
     }
 
     public function testThrowsExceptionWhenBindingResolutionFailsWhenCacheFileExists(): void
     {
+        $this->mockApplicationMakeToThrowException();
         $this->expectException(BindingResolutionException::class);
-        $this->factory->create();
+        $this->getFactory()->create();
     }
 
     public function testThrowsExceptionWhenBindingResolutionFailsWhenCacheFileDoesNotExist(): void
     {
+        $this->mockApplicationMakeToThrowException();
         $this->expectException(BindingResolutionException::class);
-        $this->factory->create();
+        $this->getFactory()->create();
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        if ($this->getName() === 'testThrowsExceptionWhenBindingResolutionFailsWhenCacheFileExists'
-            || $this->getName() === 'testThrowsExceptionWhenBindingResolutionFailsWhenCacheFileDoesNotExist') {
-            $this->mock(Application::class, function (MockInterface $mock): void {
-                $mock->shouldReceive('make')
-                    ->andThrow(BindingResolutionException::class);
-            });
-        }
-
         $this->mock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('exists')->andReturn(true, false, true);
         });
+    }
 
-        $this->factory = $this->app->make(FilterManagerFactory::class);
+    protected function mockApplicationMakeToThrowException(): void
+    {
+        $this->mock(Application::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('make')
+                ->andThrow(BindingResolutionException::class);
+        });
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    protected function getFactory(): FilterManagerFactory
+    {
+        return $this->app->make(FilterManagerFactory::class);
     }
 }

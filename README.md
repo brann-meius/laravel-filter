@@ -29,7 +29,7 @@ The `meius/laravel-filter` package provides a convenient way to apply filters to
 ## Requirements
 
 - PHP \>= 8.0
-- Laravel \>= 8.0
+- Laravel \>= 9.0
 
 ## Getting Started
 
