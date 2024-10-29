@@ -3,6 +3,8 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/brann-meius/laravel-filter/ci.yml)](https://github.com/brann-meius/laravel-filter/actions)
 [![codecov](https://codecov.io/github/brann-meius/laravel-filter/graph/badge.svg?token=36QKLEBBTV)](https://codecov.io/github/brann-meius/laravel-filter)
 [![License](https://img.shields.io/github/license/brann-meius/laravel-filter)](LICENSE)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D%208.0-blue)](https://www.php.net/)
+[![Laravel Version](https://img.shields.io/badge/laravel-%3E%3D%209.0-orange)](https://laravel.com/)
 
 ## Table of Contents
 
