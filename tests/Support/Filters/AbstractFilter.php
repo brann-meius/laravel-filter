@@ -6,4 +6,7 @@ namespace Meius\LaravelFilter\Tests\Support\Filters;
 
 use Meius\LaravelFilter\Filters\Filter;
 
-abstract class AbstractFilter extends Filter {}
+abstract class AbstractFilter extends Filter
+{
+    //
+}

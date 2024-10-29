@@ -6,11 +6,10 @@ namespace Meius\LaravelFilter\Tests\Support\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
 use Meius\LaravelFilter\Filters\Filter;
 use Meius\LaravelFilter\Tests\Support\Models\Post;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 
-#[OnlyFor(Post::class)]
 class CreatedAtFilter extends Filter
 {
     protected string $key = 'created_at';
@@ -23,5 +22,20 @@ class CreatedAtFilter extends Filter
     protected function canContinue(Request $request): bool
     {
         return false;
+    }
+
+    public function onlyFor(): array
+    {
+        return [
+            Post::class,
+            User::class,
+        ];
+    }
+
+    public function excludeFrom(): array
+    {
+        return [
+            User::class,
+        ];
     }
 }

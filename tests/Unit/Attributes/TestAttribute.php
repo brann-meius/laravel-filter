@@ -32,7 +32,8 @@ abstract class TestAttribute extends TestCase
         $attributes = $reflection->getAttributes(\Attribute::class);
 
         $this->assertNotEmpty($attributes);
-        $this->assertEquals(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE, $attributes[0]->newInstance()->flags);
+        $this
+            ->assertEquals(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE, $attributes[0]->newInstance()->flags);
     }
 
     public function testAcceptsModel(): void
