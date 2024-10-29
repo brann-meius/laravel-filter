@@ -4,69 +4,62 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Services\Filter;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Finder\Finder;
+use Meius\LaravelFilter\Helpers\FinderHelper;
 
-/**
- * Manages the application and retrieval of filters for Eloquent models.
- */
 class CachedFilterManager extends FilterManager
 {
-    private string $cachePath;
-
     public function __construct(
+        protected FinderHelper $splFileInfoHelper,
         protected Filesystem $filesystem,
-        protected Finder $finder,
-        protected LoggerInterface $logger,
-        private FilterManager $filterManager,
+        private FilterManager $filterManager
     ) {
-        parent::__construct($filesystem, $finder, $logger);
-
-        $this->cachePath = Config::get('filter.cache.path', '');
+        parent::__construct($splFileInfoHelper);
     }
 
-    /**
-     * Apply the given filter to the specified models based on the request.
-     */
     #[\Override]
-    public function apply(array $pathsToModels, Request $request): void
+    public function apply(array $models, Request $request): void
     {
         try {
-            $filters = $this->filesystem->requireOnce($this->cachePath);
-        } catch (\Throwable $exception) {
-            $this->logger->error('Failed to load filters from cache path.', [
-                'path' => $this->cachePath,
-                'message' => $exception->getMessage(),
-            ]);
-
-            $this->filterManager->apply($pathsToModels, $request);
+            $filters = $this->loadFiltersFromCache();
+        } catch (\Throwable) {
+            $this->filterManager->apply($models, $request);
 
             return;
         }
 
-        foreach ($pathsToModels as $pathToModel) {
-            if (empty($filters[$pathToModel])) {
-                continue;
-            }
-
-            foreach ($filters[$pathToModel] as $pathToFilter) {
-                $filter = $this->filter($pathToFilter);
-
-                if ($filter) {
-                    $this->applyFilterToModels($filter, [$pathToModel], $request);
-                }
-            }
+        foreach ($models as $model) {
+            $this->applyFiltersForModel($model, $filters, $request);
         }
     }
 
     /**
-     * Get paths to all filter files.
+     * Load filters from the cache file, or return null if the cache is unavailable.
+     *
+     * @throws FileNotFoundException
      */
-    protected function pathsToFilters(): array
+    private function loadFiltersFromCache(): array
     {
-        return $this->filterManager->pathsToFilters();
+        return $this->filesystem->requireOnce(Config::get('filter.cache.path', []));
+    }
+
+    /**
+     * Apply all relevant filters to a given model.
+     *
+     * @param class-string<Model> $model
+     */
+    private function applyFiltersForModel(string $model, array $filters, Request $request): void
+    {
+        if (empty($filters[$model])) {
+            return;
+        }
+
+        foreach ($filters[$model] as $filter) {
+            $this->applyFilterToModels(new $filter(), [$model], $request);
+        }
     }
 }

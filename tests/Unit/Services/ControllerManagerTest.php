@@ -4,85 +4,88 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
+use Meius\LaravelFilter\Exceptions\InvalidControllerMethodException;
+use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
-use Meius\LaravelFilter\Providers\FilterServiceProvider;
 use Meius\LaravelFilter\Tests\Support\Http\Controllers\UserController;
-use Meius\LaravelFilter\Tests\Support\Http\Models\User;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
-use Mockery;
 use Mockery\MockInterface;
 
 class ControllerManagerTest extends TestCase
 {
+    /**
+     * @throws InvalidFilterBindingException
+     * @throws InvalidControllerMethodException
+     */
     public function testAppliesFiltersSuccessfully(): void
     {
-        /** @var UserController $controller */
-        $controller = $this->app->make(UserController::class);
-        $controller->callAction('index', []);
-
+        $this->callControllerMethod('index');
         $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
     }
 
+    /**
+     * @throws InvalidFilterBindingException
+     * @throws InvalidControllerMethodException
+     */
     public function testDoesNotApplyFiltersWhenNoAttributes(): void
     {
-        /** @var UserController $controller */
-        $controller = $this->app->make(UserController::class);
-        $controller->callAction('store', []);
-
+        $this->callControllerMethod('store');
         $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
     }
 
+    /**
+     * @throws InvalidFilterBindingException
+     * @throws InvalidControllerMethodException
+     */
     public function testDoesNotApplyFiltersWhenAttributeDoesNotHaveModels(): void
     {
-        /** @var UserController $controller */
-        $controller = $this->app->make(UserController::class);
-        $controller->callAction('edit', []);
-
+        $this->callControllerMethod('edit');
         $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
     }
 
-    public function testLogsErrorOnException(): void
+    /**
+     * @throws InvalidFilterBindingException
+     */
+    public function testInvalidMethodCallThrowsException(): void
     {
-        Log::expects('error')
-            ->with(
-                'Failed to apply filters.',
-                Mockery::on(function (array $context) {
-                    return isset($context['exception']) && $context['exception'] instanceof \Throwable;
-                })
-            );
+        $this->expectException(InvalidControllerMethodException::class);
+        $this->callControllerMethod('update');
+    }
 
-        $this->partialMock(FilterManagerFactory::class, function (MockInterface $mock): void {
+    /**
+     * @throws InvalidControllerMethodException
+     */
+    public function testInvalidFilterBindingException(): void
+    {
+        $this->expectException(InvalidFilterBindingException::class);
+        $this->mock(FilterManagerFactory::class, function (MockInterface $mock): void {
             $mock->shouldReceive('create')
-                ->andThrow(new BindingResolutionException('Test exception'));
+                ->andThrow(new InvalidFilterBindingException());
         });
-
-        /** @var UserController $controller */
-        $controller = $this->app->make(UserController::class);
-
-        $controller->callAction('index', []);
-
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->callControllerMethod('index');
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Config::set('filter.path', __DIR__.'/../../Support/Filters');
+        $this->addToRequest([
+            'users' => [
+                'id' => 1,
+            ]
+        ]);
+    }
 
-        $this->app->register(FilterServiceProvider::class);
 
-        Request::instance()
-            ->merge([
-                'filter' => [
-                    'users' => [
-                        'id' => 1,
-                    ]
-                ]
-            ]);
+    /**
+     * @throws InvalidFilterBindingException
+     * @throws InvalidControllerMethodException
+     */
+    private function callControllerMethod(string $method): void
+    {
+        /** @var UserController $controller */
+        $controller = $this->app->make(UserController::class);
+        $controller->callAction($method, []);
     }
 }

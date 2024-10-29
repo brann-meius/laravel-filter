@@ -4,27 +4,44 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Console;
 
-use Illuminate\Console\Command;
-use Meius\LaravelFilter\FilterCreator;
+use Illuminate\Console\Concerns\CreatesMatchingTest;
+use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 
-class FilterMakeCommand extends Command
+/**
+ * @codeCoverageIgnore
+ */
+#[AsCommand(
+    name: 'make:filter',
+    description: 'Create a new filter class',
+)]
+class FilterMakeCommand extends GeneratorCommand
 {
-    protected $signature = 'make:filter {name : The name of the filter}';
+    use CreatesMatchingTest;
 
-    protected $description = 'Create a new filter';
+    /**
+     * The type of class being generated.
+     *
+     * @var string
+     */
+    protected $type = 'Filter';
 
-    public function handle(FilterCreator $filterCreator): int
+    /**
+     * Get the default namespace for the class.
+     *
+     * @param string $rootNamespace
+     */
+    protected function getDefaultNamespace($rootNamespace): string
     {
-        try {
-            $path = $filterCreator->create($this->argument('name'));
-        } catch (\Throwable $exception) {
-            $this->error($exception->getMessage());
+        return $rootNamespace . '\\' . Config::get('filter.path');
+    }
 
-            return self::FAILURE;
-        }
-
-        $this->components->info("Filter [$path] created successfully.");
-
-        return self::SUCCESS;
+    /**
+     * Get the stub content for the filter.
+     */
+    protected function getStub(): string
+    {
+        return __DIR__ . '/../filter.stub';
     }
 }

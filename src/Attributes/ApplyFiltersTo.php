@@ -10,4 +10,7 @@ namespace Meius\LaravelFilter\Attributes;
  * Used to annotate methods that define filters for models.
  */
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
-class ApplyFiltersTo extends Setting {}
+class ApplyFiltersTo extends Setting
+{
+    //
+}

@@ -10,22 +10,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Meius\LaravelFilter\Providers\FilterServiceProvider;
 use Meius\LaravelFilter\Services\Filter\FilterManager;
-use Meius\LaravelFilter\Tests\Support\Http\Models\Comment;
-use Meius\LaravelFilter\Tests\Support\Http\Models\Post;
-use Meius\LaravelFilter\Tests\Support\Http\Models\User;
+use Meius\LaravelFilter\Tests\Support\Models\Comment;
+use Meius\LaravelFilter\Tests\Support\Models\Post;
+use Meius\LaravelFilter\Tests\Support\Models\User;
 use Mockery;
 use Mockery\MockInterface;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
 class FilterManagerTest extends TestFilterManager
 {
     public function testAppliesFiltersToModels(): void
     {
-        $this->app->register(FilterServiceProvider::class);
-
         /** @var FilterManager $filterManager */
         $filterManager = $this->app->make(FilterManager::class);
 
@@ -54,26 +48,5 @@ class FilterManagerTest extends TestFilterManager
         $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-title'));
         $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-created_at'));
         $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-updated_at'));
-    }
-
-    public function testLogsErrorWhenFilterFileNotFound(): void
-    {
-        Log::expects('error')
-            ->between(1, 10)
-            ->with('The filter file at {path} could not be found.', Mockery::on(function (array $context): bool {
-                return isset($context['exception']) && $context['exception'] instanceof FileNotFoundException;
-            }));
-
-        $this->mock(Filesystem::class, function (MockInterface $mock): void {
-            $mock->shouldReceive('requireOnce')
-                ->andReturn(EXTR_SKIP);
-        });
-
-        $this->app->register(FilterServiceProvider::class);
-
-        /** @var FilterManager $filterManager */
-        $filterManager = $this->app->make(FilterManager::class);
-
-        $filterManager->apply([User::class], Request::instance());
     }
 }

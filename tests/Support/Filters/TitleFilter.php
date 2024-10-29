@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+namespace Meius\LaravelFilter\Tests\Support\Filters;
+
 use Illuminate\Database\Eloquent\Builder;
 use Meius\LaravelFilter\Attributes\Settings\OnlyFor;
 use Meius\LaravelFilter\Filters\Filter;
-use Meius\LaravelFilter\Tests\Support\Http\Models\Post;
+use Meius\LaravelFilter\Tests\Support\Models\Post;
 
-return new #[OnlyFor(Post::class)] class extends Filter
+#[OnlyFor(Post::class)]
+class TitleFilter extends Filter
 {
     protected string $key = 'title';
 
@@ -15,4 +18,4 @@ return new #[OnlyFor(Post::class)] class extends Filter
     {
         return $builder->where('title', 'LIKE', "%$value%");
     }
-};
+}

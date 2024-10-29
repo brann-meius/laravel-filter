@@ -12,4 +12,7 @@ use Meius\LaravelFilter\Attributes\Setting;
  * Used to annotate classes that should have filters applied exclusively to them.
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class OnlyFor extends Setting {}
+class OnlyFor extends Setting
+{
+    //
+}
