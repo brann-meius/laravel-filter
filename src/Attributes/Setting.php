@@ -28,7 +28,7 @@ abstract class Setting
             }
 
             if (! is_subclass_of($model, Model::class)) {
-                throw new InvalidModelException("The class {$model} must be a subclass of ".Model::class);
+                throw new InvalidModelException("The class {$model} must be a subclass of " . Model::class);
             }
         }
     }

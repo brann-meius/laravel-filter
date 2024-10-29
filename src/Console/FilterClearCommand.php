@@ -7,13 +7,14 @@ namespace Meius\LaravelFilter\Console;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(
+    name: 'filter:clear',
+    description: 'Remove the filters cache file',
+)]
 class FilterClearCommand extends Command
 {
-    protected $signature = 'filter:clear';
-
-    protected $description = 'Remove the filters cache file';
-
     public function handle(Filesystem $filesystem): int
     {
         try {
@@ -21,7 +22,7 @@ class FilterClearCommand extends Command
                 Config::get('filter.cache.path')
             );
         } catch (\Throwable $exception) {
-            $this->components->error('Failed to clear filters cache file: '.$exception->getMessage());
+            $this->components->error('Failed to clear filters cache file: ' . $exception->getMessage());
 
             return self::FAILURE;
         }

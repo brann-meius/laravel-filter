@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Meius\LaravelFilter\Traits\Filters\FilterCriteria;
+use Meius\LaravelFilter\Traits\Filters\FilterPathUtilities;
 
 abstract class Filter implements FilterInterface
 {
-    protected Model $model;
+    use FilterCriteria;
+    use FilterPathUtilities;
 
-    /**
-     * The key used to identify the filter parameter in the request.
-     */
-    protected string $key;
+    protected Model $model;
 
     /**
      * Define the query logic for the filter.
@@ -26,34 +26,13 @@ abstract class Filter implements FilterInterface
      */
     abstract protected function query(Builder $builder, $value): Builder;
 
-    public function __invoke(string $pathToModel, Request $request): self
+    public function __invoke(string $model, Request $request): void
     {
-        $this->model = App::make($pathToModel);
+        if (! $this->initializeModel($model)) {
+            return;
+        }
 
         $this->apply($request);
-
-        return $this;
-    }
-
-    /**
-     * Apply the filter to the request.
-     */
-    public function apply(Request $request): void
-    {
-        if (empty($this->model)) {
-            return;
-        }
-
-        if (! $this->canContinue($request)) {
-            return;
-        }
-
-        $request->whenHas($this->pathFromRequest(), function (mixed $field): void {
-            $this->model::addGlobalScope(
-                $this->scopeName(),
-                fn (Builder $builder): Builder => $this->query($builder, $field)
-            );
-        });
     }
 
     /**
@@ -65,18 +44,47 @@ abstract class Filter implements FilterInterface
     }
 
     /**
-     * Get the scope name for the filter.
+     * Initialize the model instance.
+     *
+     * @param class-string<Model> $model
      */
-    protected function scopeName(): string
+    private function initializeModel(string $model): bool
     {
-        return "filter:{$this->model->getTable()}-by-$this->key";
+        if (! class_exists($model) || ! is_subclass_of($model, Model::class)) {
+            return false;
+        }
+
+        $this->model = App::make($model);
+
+        return true;
     }
 
     /**
-     * Get the path from the request.
+     * Apply filters if applicable.
      */
-    final protected function pathFromRequest(): string
+    private function apply(Request $request): void
     {
-        return "filter.{$this->model->getTable()}.$this->key";
+        if (! $this->canContinue($request)) {
+            return;
+        }
+
+        $request->whenHas(
+            $this->extractFilterPathFromRequest(),
+            function (mixed $field): void {
+                $this->addGlobalScope($field);
+            }
+        );
+    }
+
+
+    /**
+     * Add a global scope for the model with the given field.
+     */
+    private function addGlobalScope(mixed $field): void
+    {
+        $this->model::addGlobalScope(
+            $this->generateFilterScopeName(),
+            fn (Builder $builder): Builder => $this->query($builder, $field)
+        );
     }
 }

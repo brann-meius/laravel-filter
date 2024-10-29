@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter\Tests\Support\Http\Models;
+namespace Meius\LaravelFilter\Tests\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,4 +18,9 @@ class User extends Model
         'created_at',
         'updated_at',
     ];
+
+    public static function getAllGlobalScopes()
+    {
+        return static::$globalScopes;
+    }
 }

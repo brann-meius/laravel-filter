@@ -6,9 +6,9 @@ namespace Meius\LaravelFilter\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
-use Meius\LaravelFilter\Services\Filter\FilterManager;
+use Meius\LaravelFilter\Helpers\FinderHelper;
 use SplFileInfo;
-use Symfony\Component\Finder\Finder;
+use ReflectionClass;
 
 class ModelManager
 {
@@ -16,34 +16,30 @@ class ModelManager
     private static array $reflectionClassCache = [];
 
     public function __construct(
-        private FilterManager $filterManager,
-        private Finder $finder,
-    ) {}
+        private FinderHelper $finderHelper
+    ) {
+        //
+    }
 
     /**
      * Get all Eloquent models in the application.
      *
      * @return array<class-string<Model>>
      */
-    public function get(): array
+    public function getModels(): array
     {
         $models = [];
-        $ignoredDirectories = array_map('realpath', $this->filterManager->getDirectoriesWithFilters());
-        $this->finder->files()
-            ->in(App::path())
-            ->exclude($ignoredDirectories)
-            ->name('*.php');
 
         /** @var SplFileInfo $file */
-        foreach ($this->finder as $file) {
-            $className = $this->getClassNameFromFile($file);
+        foreach ($this->finderHelper->configureFinderFiles(App::path()) as $file) {
+            try {
+                $className = $this->finderHelper->getNamespace($file);
+            } catch (\RuntimeException) {
+                continue;
+            }
 
-            if ($this->isClassExists($className)) {
-                $reflectionClass = $this->getReflectionClass($className);
-
-                if ($this->isEloquentModel($reflectionClass)) {
-                    $models[] = $className;
-                }
+            if ($this->isClassValidModel($className)) {
+                $models[] = $className;
             }
         }
 
@@ -51,61 +47,40 @@ class ModelManager
     }
 
     /**
-     * Get the class name from a file.
+     * Check if a class is a valid Eloquent model.
      */
-    private function getClassNameFromFile(SplFileInfo $file): string
+    private function isClassValidModel(string $class): bool
     {
-        $namespace = $this->extractNamespaceFromFile($file);
-        return $namespace.'\\'.$file->getBasename('.php');
+        if (! $this->isClassExists($class)) {
+            return false;
+        }
+
+        $reflectionClass = $this->getReflectionClass($class);
+
+        return $this->isEloquentModel($reflectionClass);
     }
 
     /**
      * Check if a reflection class is an Eloquent model.
      */
-    private function isEloquentModel(\ReflectionClass $reflectionClass): bool
+    private function isEloquentModel(ReflectionClass $reflection): bool
     {
-        return $reflectionClass->isSubclassOf(Model::class) && ! $reflectionClass->isAbstract();
-    }
-
-    /**
-     * Extract the namespace from a PHP file.
-     */
-    private function extractNamespaceFromFile(SplFileInfo $file): string
-    {
-        $contents = @file_get_contents($file->getPathname());
-
-        if ($contents === false) {
-            return '';
-        }
-
-        if (preg_match('/^namespace\s+(.+?);/m', $contents, $matches)) {
-            return $matches[1];
-        }
-
-        return '';
+        return $reflection->isSubclassOf(Model::class) && ! $reflection->isAbstract();
     }
 
     /**
      * Check if a class exists with caching.
      */
-    private function isClassExists(string $className): bool
+    private function isClassExists(string $class): bool
     {
-        if (!isset(self::$classExistsCache[$className])) {
-            self::$classExistsCache[$className] = class_exists($className);
-        }
-
-        return self::$classExistsCache[$className];
+        return self::$classExistsCache[$class] ??= class_exists($class);
     }
 
     /**
      * Get the reflection class with caching.
      */
-    private function getReflectionClass(string $className): \ReflectionClass
+    private function getReflectionClass(string $class): ReflectionClass
     {
-        if (!isset(self::$reflectionClassCache[$className])) {
-            self::$reflectionClassCache[$className] = new \ReflectionClass($className);
-        }
-
-        return self::$reflectionClassCache[$className];
+        return self::$reflectionClassCache[$class] ??= new ReflectionClass($class);
     }
 }

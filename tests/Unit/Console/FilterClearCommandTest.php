@@ -13,7 +13,7 @@ class FilterClearCommandTest extends TestCase
 {
     public function testClearsCacheFileSuccessfully(): void
     {
-        $this->mock(Filesystem::class, function(MockInterface $mock): void {
+        $this->mock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('delete')
                 ->andReturn(true);
         });
@@ -25,7 +25,7 @@ class FilterClearCommandTest extends TestCase
 
     public function testFailsToClearCacheFileWhenExceptionIsThrown(): void
     {
-        $this->mock(Filesystem::class, function(MockInterface $mock): void {
+        $this->mock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('delete')
                 ->andThrow(new \Exception('Failed to clear filters cache file.'));
         });

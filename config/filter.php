@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
 return [
@@ -16,7 +15,7 @@ return [
     | change this path to any location that suits your application's structure.
     |
     */
-    'path' => App::path('Filters'),
+    'path' => 'Filters',
 
     /*
     |--------------------------------------------------------------------------
@@ -30,20 +29,5 @@ return [
 
     'cache' => [
         'path' => App::bootstrapPath('cache/filters.php'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Logger Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure the logger settings for the filter and controller
-    | managers. You can specify the log driver and the log path.
-    |
-    */
-
-    'logger' => [
-        'driver' => 'single',
-        'path' => App::storagePath('logs/filter/'.Carbon::now()->format('Y-m-d').'.log'),
     ],
 ];
