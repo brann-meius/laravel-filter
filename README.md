@@ -16,6 +16,7 @@
     - [Caching Filters](#caching-filters)
     - [Example](#example)
     - [Using `ExcludeFrom` and `OnlyFor` Attributes](#using-excludefrom-and-onlyfor-attributes)
+    - [Prioritization of Settings](#prioritization-of-settings)
     - [Example Request Structure](#example-request-structure)
     - [Advanced Usage](#advanced-usage)
 - [Examples for Other Databases](#examples-for-other-databases)
@@ -123,7 +124,7 @@ Here is an example of how to define and apply filters:
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class TitleFilter extends Filter
     {
         /**
          * The key used to identify the filter parameter in the request.
@@ -134,7 +135,7 @@ Here is an example of how to define and apply filters:
         {
             return $builder->where('title', 'like', "%$value%");
         }
-    };
+    }
     ```
 
 2. Create a filter for related models:
@@ -142,17 +143,17 @@ Here is an example of how to define and apply filters:
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class AuthorIdFilter extends Filter
     {
         protected string $key = 'author_id';
 
         protected function query(Builder $builder, $value): Builder
         {
-            return $builder->whereHas('author', function (Builder $query) use ($value) {
+            return $builder->whereHas('author', function (Builder $query) use ($value): void {
                 $query->where('id', '=', $value);
             });
         }
-    };
+    }
     ```
 
 3. If you need to apply a filter according to a condition, you can use the `canContinue` method:
@@ -160,11 +161,8 @@ Here is an example of how to define and apply filters:
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class OwnerFilter extends Filter
     {
-        /**
-         * The key used to identify the filter parameter in the request.
-         */
         protected string $key = 'owner';
 
         protected function query(Builder $builder, $value): Builder
@@ -191,18 +189,16 @@ You can use the `ExcludeFrom` and `OnlyFor` attributes to conditionally apply fi
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will never be applied to the "User" model and beyond.
-    return new #[ExcludeFrom(User::class, Category::class, ...)] class extends Filter
+    #[ExcludeFrom(User::class, Category::class, ...)]
+    class ContentFilter extends Filter
     {
-        /**
-         * The key used to identify the filter parameter in the request.
-         */
         protected string $key = 'content';
 
         protected function query(Builder $builder, $value): Builder
         {
             // Filter logic
         }
-    };
+    }
     ```
 
 2. Create a filter with `OnlyFor`:
@@ -213,19 +209,116 @@ You can use the `ExcludeFrom` and `OnlyFor` attributes to conditionally apply fi
     use Meius\LaravelFilter\Filters\Filter;
 
     // The filter will be applied to the "Post" model and beyond only.
-    return new #[OnlyFor(Post::class, Comment::class, ...)] class extends Filter
+    #[OnlyFor(Post::class, Comment::class, ...)] 
+    class ContentFilter extends Filter
     {
-        /**
-         * The key used to identify the filter parameter in the request.
-         */
         protected string $key = 'content';
 
         protected function query(Builder $builder, $value): Builder
         {
             // Filter logic
         }
-    };
+    }
     ```
+
+3. You can also use the `ExcludeFrom` and `OnlyFor` attributes together(If you need it \\@_@/):
+    ```php
+    use App\Models\Comment;
+    use App\Models\Post;
+    use App\Models\User;
+    use Meius\LaravelFilter\Attributes\ExcludeFrom;
+    use Meius\LaravelFilter\Attributes\OnlyFor;
+    use Meius\LaravelFilter\Filters\Filter;
+
+    // The filter will be applied to the "Comment" and "User" models only.
+    #[
+        OnlyFor(Post::class, Comment::class, User::class),
+        ExcludeFrom(Post::class),
+    ] 
+    class ContentFilter extends Filter
+    {
+        protected string $key = 'content';
+
+        protected function query(Builder $builder, $value): Builder
+        {
+            // Filter logic
+        }
+    }
+    ```
+   
+4. Create a filter using properties:
+    ```php
+    use App\Models\Comment;
+    use App\Models\Post;
+    use Meius\LaravelFilter\Filters\Filter;
+
+    class ContentFilter extends Filter
+    {
+        /**
+         * The models to which the filter should exclusively apply.
+         *
+         * @var array<Model>
+         */
+        protected array $onlyFor = [
+            Comment::class,
+            Post::class,
+        ];
+        
+        /**
+         * The models to which the filter should not be applied.
+         *
+         * @var array<Model>
+         */
+        protected array $excludeFrom = [];
+   
+        protected string $key = 'content';
+
+        protected function query(Builder $builder, $value): Builder
+        {
+            // Filter logic
+        }
+    }
+    ```
+   
+5. Create a filter using methods:
+    ```php
+    use App\Models\Comment;
+    use App\Models\Post;
+    use Meius\LaravelFilter\Filters\Filter;
+
+    class ContentFilter extends Filter
+    {   
+        protected string $key = 'content';
+
+        protected function query(Builder $builder, $value): Builder
+        {
+            // Filter logic
+        }
+   
+        protected function onlyFor(): array
+        {
+            return [
+                User::class,
+                Category::class,
+            ];
+        }
+   
+        protected function excludeFrom(): array
+        {
+            return [];
+        }
+    }
+    ```
+
+### Prioritization of Settings
+
+When defining filter settings, the priority of the settings is as follows:
+
+1. **Method**: The highest priority. If a method is defined to specify the filter settings, it will override any settings defined via properties or attributes.
+2. **Property**: Medium priority. If a property is defined to specify the filter settings, it will override any settings defined via attributes but will be overridden by method definitions.
+3. **Attribute**: The lowest priority. If settings are defined via attributes, they will be used only if there are no corresponding settings defined via methods or properties.
+
+This means that if there are conflicting settings defined in multiple ways, only the setting with the highest priority will be applied. For example, if a filter has both a method and an attribute defining the same setting, the method's setting will take precedence and be applied, while the attribute's setting will be ignored.
 
 ### Example Request Structure
 
@@ -258,19 +351,19 @@ You can use the `ExcludeFrom` and `OnlyFor` attributes to conditionally apply fi
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class ComplexFilter extends Filter
     {
         protected string $key = 'complex_filter';
 
         protected function query(Builder $builder, $value): Builder
         {
             return $builder->where('status', 'active')
-                           ->where(function ($query) use ($value) {
-                               $query->where('name', 'like', "%{$value}%")
-                                     ->orWhere('description', 'like', "%{$value}%");
-                           });
+                ->where(function ($query) use ($value) {
+                    $query->where('name', 'like', "%{$value}%")
+                          ->orWhere('description', 'like', "%{$value}%");
+                });
         }
-    };
+    }
     ```
 
 ### Combined Filters
@@ -280,17 +373,17 @@ You can use the `ExcludeFrom` and `OnlyFor` attributes to conditionally apply fi
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class CombinedFilter extends Filter
     {
         protected string $key = 'combined_filter';
 
         protected function query(Builder $builder, $value): Builder
         {
             return $builder->where('category', $value['category'])
-                           ->where('price', '>=', $value['min_price'])
-                           ->where('price', '<=', $value['max_price']);
+                ->where('price', '>=', $value['min_price'])
+                ->where('price', '<=', $value['max_price']);
         }
-    };
+    }
     ```
 
 ## Examples for Other Databases
@@ -304,7 +397,7 @@ Using the `query` method, you can create filters for different databases.
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class TitleFilter extends Filter
     {
         protected string $key = 'title';
 
@@ -312,7 +405,7 @@ Using the `query` method, you can create filters for different databases.
         {
             return $builder->whereRaw('title ILIKE ?', ["%{$value}%"]);
         }
-    };
+    }
     ```
 
 ### SQLite
@@ -322,7 +415,7 @@ Using the `query` method, you can create filters for different databases.
     use Illuminate\Database\Eloquent\Builder;
     use Meius\LaravelFilter\Filters\Filter;
 
-    return new class extends Filter
+    class TitleFilter extends Filter
     {
         protected string $key = 'title';
 
@@ -330,12 +423,24 @@ Using the `query` method, you can create filters for different databases.
         {
             return $builder->where('title', 'like', "%{$value}%");
         }
-    };
+    }
     ```
 
 ## Support
 
 For support, please open an issue on the [GitHub repository](https://github.com/brann-meius/laravel-filter/issues).
+
+### Contributing
+
+We welcome contributions to the `meius/laravel-filter` library. To contribute, follow these steps:
+
+1. **Fork the Repository**: Fork the repository on GitHub and clone it to your local machine.
+2. **Create a Branch**: Create a new branch for your feature or bugfix.
+3. **Write Tests**: Write tests to cover your changes.
+4. **Run Tests**: Ensure all tests pass by running `phpunit`.
+5. **Submit a Pull Request**: Submit a pull request with a clear description of your changes.
+
+For more details, refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## License
 
