@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter\Tests\Unit\Helpers;
+namespace Meius\LaravelFilter\Tests\Unit\Services;
 
-use Meius\LaravelFilter\Helpers\FinderHelper;
+use Meius\LaravelFilter\Services\FinderService;
 use Meius\LaravelFilter\Tests\TestCase;
 use Mockery\MockInterface;
 use RuntimeException;
 use Symfony\Component\Finder\SplFileInfo;
 
-class FinderHelperTest extends TestCase
+class FinderServiceTest extends TestCase
 {
     public function testThrowsExceptionWhenFileIsNotReadable(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('File is not readable.');
 
-        $this->getFinderHelper()->getNamespace($this->getFile());
+        $this->getFinderService()->getNamespace($this->getFile());
     }
 
-    private function getFinderHelper(): FinderHelper
+    private function getFinderService(): FinderService
     {
-        /** @var FinderHelper $finderHelper */
-        $finderHelper = $this->app->make(FinderHelper::class);
+        /** @var FinderService $finderService */
+        $finderService = $this->app->make(FinderService::class);
 
-        return $finderHelper;
+        return $finderService;
     }
 
     private function getFile(): SplFileInfo|MockInterface

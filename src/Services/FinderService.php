@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Meius\LaravelFilter\Helpers;
+namespace Meius\LaravelFilter\Services;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-class FinderHelper
+class FinderService
 {
     public function __construct(private Finder $finder)
     {

@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Meius\LaravelFilter\Helpers\FinderHelper;
+use Meius\LaravelFilter\Services\FinderService;
 
 class CachedFilterManager extends FilterManager
 {
     public function __construct(
-        protected FinderHelper $splFileInfoHelper,
+        protected FinderService $finderService,
         protected Filesystem $filesystem,
         private FilterManager $filterManager
     ) {
-        parent::__construct($splFileInfoHelper);
+        parent::__construct($finderService);
     }
 
     #[\Override]
