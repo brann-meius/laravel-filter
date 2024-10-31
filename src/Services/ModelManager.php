@@ -6,9 +6,8 @@ namespace Meius\LaravelFilter\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
-use Meius\LaravelFilter\Helpers\FinderHelper;
-use SplFileInfo;
 use ReflectionClass;
+use SplFileInfo;
 
 class ModelManager
 {
@@ -16,7 +15,7 @@ class ModelManager
     private static array $reflectionClassCache = [];
 
     public function __construct(
-        private FinderHelper $finderHelper
+        private FinderService $finderService
     ) {
         //
     }
@@ -31,9 +30,9 @@ class ModelManager
         $models = [];
 
         /** @var SplFileInfo $file */
-        foreach ($this->finderHelper->configureFinderFiles(App::path()) as $file) {
+        foreach ($this->finderService->configureFinderFiles(App::path()) as $file) {
             try {
-                $className = $this->finderHelper->getNamespace($file);
+                $className = $this->finderService->getNamespace($file);
             } catch (\RuntimeException) {
                 continue;
             }
