@@ -6,7 +6,6 @@ namespace Meius\LaravelFilter\Tests;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as RequestFacade;
-use Meius\LaravelFilter\Providers\AppServiceProvider;
 use Meius\LaravelFilter\Providers\FilterServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -23,7 +22,6 @@ class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->app->register(AppServiceProvider::class);
         $this->app->register(FilterServiceProvider::class);
 
         $this->moveFilters();
