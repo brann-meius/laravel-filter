@@ -31,6 +31,7 @@ class CachedFilterManagerTest extends TestFilterManager
                         IdFilter::class,
                         TitleFilter::class,
                         ContentFilter::class,
+                        ContentFilter::class . 'NonExistent',
                     ],
                     Comment::class => [
                         IdFilter::class,
