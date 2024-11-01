@@ -39,12 +39,10 @@ class ScopedFilterMiddleware
             return $next($request);
         }
 
-        // Check if attributes contain models.
-        if (empty($models = $this->parseAttributes($reflectionAttributes))) {
-            return $next($request);
-        }
-
-        $this->controllerManager->handle($request, $models);
+        $this->controllerManager->handle(
+            $request,
+            $this->extractModelsFromAttributes($reflectionAttributes)
+        );
 
         return $next($request);
     }

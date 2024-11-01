@@ -17,14 +17,14 @@ trait FilterCriteria
     /**
      * The models to which the filter should exclusively apply.
      *
-     * @var array<Model>
+     * @var Model[]
      */
     protected array $onlyFor = [];
 
     /**
      * The models to which the filter should not be applied.
      *
-     * @var array<Model>
+     * @var Model[]
      */
     protected array $excludeFrom = [];
 
@@ -54,12 +54,12 @@ trait FilterCriteria
     /**
      * Retrieve models based on the specified attribute.
      *
-     * @return array<Model>
+     * @return Model[]
      */
     private function retrieveModelsFromAttribute(string $attribute): array
     {
         $reflection = new ReflectionClass($this);
 
-        return $this->parseAttributes($reflection->getAttributes($attribute));
+        return $this->extractModelsFromAttributes($reflection->getAttributes($attribute));
     }
 }

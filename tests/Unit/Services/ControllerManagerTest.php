@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Tests\Unit\Services;
 
 use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
+use Meius\LaravelFilter\Exceptions\InvalidModelException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
 use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
@@ -40,11 +41,10 @@ class ControllerManagerTest extends TestCase
 
     public function testDoesNotApplyFiltersWhenAttributeDoesNotHaveModels(): void
     {
-        $this->call('GET', '/users/12', $this->request->all())
-            ->assertOk()
-            ->assertJson([]);
+        $this->withoutExceptionHandling();
+        $this->expectException(InvalidModelException::class);
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->call('GET', '/users/12', $this->request->all());
     }
 
     public function testInvalidFilterBindingException(): void
