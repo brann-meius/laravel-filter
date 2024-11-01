@@ -15,6 +15,7 @@
 - [Usage](#usage)
     - [Creating Filters](#creating-filters)
     - [Applying Filters](#applying-filters)
+    - [Applying Filters to Route Groups](#applying-filters-to-route-groups)
     - [Caching Filters](#caching-filters)
     - [Example](#example)
     - [Using `ExcludeFrom` and `OnlyFor` Attributes](#using-excludefrom-and-onlyfor-attributes)
@@ -56,28 +57,13 @@ To get started with the `meius/laravel-filter` package, follow the installation 
 
 ### Applying Filters
 
-1. Use the `Filterable` trait in your controller class:
-    ```php
-    use App\Http\Controllers\Controller as BaseController;
-    use Meius\LaravelFilter\Traits\Filterable;
-
-    class PostController extends BaseController
-    {
-        use Filterable;
-
-        // Your methods
-    }
-    ```
-
-2. Define filters using attributes in your controller methods:
+1. Define filters using attributes in your controller methods:
     ```php
     use App\Attributes\Filter\ApplyFiltersTo;
     use App\Models\Post;
 
     class PostController
     {
-        use Filterable;
-
         #[ApplyFiltersTo(Post::class)]
         public function index()
         {
@@ -86,7 +72,7 @@ To get started with the `meius/laravel-filter` package, follow the installation 
     }
     ```
 
-3. To apply filters to related models, use the `ApplyFiltersTo` attribute with multiple model classes:
+2. To apply filters to related models, use the `ApplyFiltersTo` attribute with multiple model classes:
     ```php
     use App\Attributes\Filter\ApplyFiltersTo;
     use App\Models\Author;
@@ -95,8 +81,6 @@ To get started with the `meius/laravel-filter` package, follow the installation 
 
     class PostController
     {
-        use Filterable;
-
         #[ApplyFiltersTo(Post::class, Comment::class, Author::class)]
         public function index()
         {
@@ -108,6 +92,30 @@ To get started with the `meius/laravel-filter` package, follow the installation 
                 ->get();
         }
     }
+    ```
+
+### Applying Filters to Route Groups
+
+By default, filters are applied to the web and API route groups. To customize this behavior, you must publish the
+configuration file and make the necessary adjustments.
+
+1. **Publish the Configuration File**:
+   ```bash
+   php artisan vendor:publish --tag=filter-config
+   ```
+
+2. **Update the Configuration**:
+   Open the `config/filter.php` file and modify the `route_groups` section to specify which groups should have filters
+   applied.
+
+    ```php
+    return [
+        // Filters will not be applied to API route groups with this change.
+        'route_groups' => [
+            //'api',
+            'web',
+        ],
+    ];
     ```
 
 ### Caching Filters
