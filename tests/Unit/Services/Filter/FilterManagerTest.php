@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services\Filter;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Meius\LaravelFilter\Providers\FilterServiceProvider;
 use Meius\LaravelFilter\Services\Filter\FilterManager;
 use Meius\LaravelFilter\Tests\Support\Models\Comment;
 use Meius\LaravelFilter\Tests\Support\Models\Post;
 use Meius\LaravelFilter\Tests\Support\Models\User;
-use Mockery;
-use Mockery\MockInterface;
 
 class FilterManagerTest extends TestFilterManager
 {

@@ -15,6 +15,7 @@ return [
     | change this path to any location that suits your application's structure.
     |
     */
+
     'path' => 'Filters',
 
     /*
@@ -29,5 +30,19 @@ return [
 
     'cache' => [
         'path' => App::bootstrapPath('cache/filters.php'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Route Groups
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure the route groups that the filters will be applied to.
+    | The filters will be applied to all routes within the specified groups.
+    |
+    */
+    'route_groups' => [
+        'web',
+        'api',
     ],
 ];

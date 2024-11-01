@@ -6,7 +6,10 @@ namespace Meius\LaravelFilter\Tests;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Illuminate\Support\Facades\Route;
+use Meius\LaravelFilter\Http\Middleware\ScopedFilterMiddleware;
 use Meius\LaravelFilter\Providers\FilterServiceProvider;
+use Meius\LaravelFilter\Tests\Support\Http\Controllers\UserController;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
@@ -24,7 +27,8 @@ class TestCase extends BaseTestCase
 
         $this->app->register(FilterServiceProvider::class);
 
-        $this->moveFilters();
+        $this->moveFilters()
+            ->registerRoutes();
 
         $this->request = RequestFacade::instance();
     }
@@ -54,6 +58,19 @@ class TestCase extends BaseTestCase
             __DIR__ . $source,
             $this->app->path($destination)
         );
+
+        return $this;
+    }
+
+    protected function registerRoutes(): self
+    {
+        Route::middleware(ScopedFilterMiddleware::class)
+            ->group(function () {
+                Route::permanentRedirect('/', '/users');
+                Route::get('/users', [UserController::class, 'index']);
+                Route::post('/users', [UserController::class, 'store']);
+                Route::get('/users/{user}', [UserController::class, 'edit']);
+            });
 
         return $this;
     }
