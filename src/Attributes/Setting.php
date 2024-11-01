@@ -9,6 +9,8 @@ use Meius\LaravelFilter\Exceptions\InvalidModelException;
 
 abstract class Setting
 {
+    private array $models;
+
     /**
      * Create a new attribute instance.
      *
@@ -30,6 +32,13 @@ abstract class Setting
             if (! is_subclass_of($model, Model::class)) {
                 throw new InvalidModelException("The class {$model} must be a subclass of " . Model::class);
             }
+
+            $this->models[] = $model;
         }
+    }
+
+    public function getModels(): array
+    {
+        return $this->models;
     }
 }

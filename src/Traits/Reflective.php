@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Traits;
 
+use Meius\LaravelFilter\Attributes\ApplyFiltersTo;
 use ReflectionAttribute;
 
 trait Reflective
 {
     /**
-     * @param  array<ReflectionAttribute>  $reflectionAttributes
+     * @param ReflectionAttribute[] $reflectionAttributes
      */
-    private function parseAttributes(array $reflectionAttributes): array
+    private function extractModelsFromAttributes(array $reflectionAttributes): array
     {
-        $attributes = [];
+        $nestedModels = [];
 
         foreach ($reflectionAttributes as $reflectionAttribute) {
-            $attributes = array_merge($attributes, $reflectionAttribute->getArguments());
+            /** @var ApplyFiltersTo $attribute */
+            $attribute = $reflectionAttribute->newInstance();
+            $nestedModels[] = $attribute->getModels();
         }
 
-        return array_unique($attributes);
+        return array_unique(
+            array_merge(...$nestedModels)
+        );
     }
 }
