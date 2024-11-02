@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Traits\Filters;
 
 use Meius\LaravelFilter\Helpers\FilterScopeHelper;
+use Meius\LaravelFilter\Traits\HasFilterAlias;
 
 trait FilterPathUtilities
 {
@@ -26,6 +27,11 @@ trait FilterPathUtilities
      */
     protected function extractFilterPathFromRequest(): string
     {
-        return "filter.{$this->model->getTable()}.$this->key";
+        $table = match (in_array(HasFilterAlias::class, class_uses($this->model))) {
+            true => $this->model->getFilterAlias(),
+            default => $this->model->getTable(),
+        };
+
+        return "filter.$table.$this->key";
     }
 }

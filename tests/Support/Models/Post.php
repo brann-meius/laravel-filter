@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Support\Models;
 
+use Meius\LaravelFilter\Traits\HasFilterAlias;
+
 class Post extends Model
 {
+    use HasFilterAlias;
+
     protected $table = 'posts';
 
     protected $fillable = [

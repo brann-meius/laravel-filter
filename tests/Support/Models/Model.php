@@ -7,7 +7,7 @@ namespace Meius\LaravelFilter\Tests\Support\Models;
 use Illuminate\Database\Eloquent\Model as ParentModel;
 use Meius\LaravelFilter\Helpers\FilterScopeHelper;
 
-class Model extends ParentModel
+abstract class Model extends ParentModel
 {
     public static function getAllGlobalScopes()
     {

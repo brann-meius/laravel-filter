@@ -26,7 +26,7 @@ abstract class TestFilterManager extends TestCase
                 'title' => 'It`s a story',
                 'content' => 'Once upon a time...',
             ],
-            'comments' => [
+            'c' => [
                 'id' => 14,
                 'title' => 'ggvp',
                 'content' => 'Never give up!',
