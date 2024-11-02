@@ -36,24 +36,24 @@ abstract class TestFilterManager extends TestCase
 
     protected function assertCorrectConnections(): void
     {
-        $this->assertTrue(User::hasGlobalScope(User::generateFilterScopeKey('id')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('title')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('content')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('last_name')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('email')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('created_at')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('updated_at')));
+        $this->assertTrue(User::hasFilterScopeByKey('id'));
+        $this->assertFalse(User::hasFilterScopeByKey('title'));
+        $this->assertFalse(User::hasFilterScopeByKey('content'));
+        $this->assertFalse(User::hasFilterScopeByKey('last_name'));
+        $this->assertFalse(User::hasFilterScopeByKey('email'));
+        $this->assertFalse(User::hasFilterScopeByKey('created_at'));
+        $this->assertFalse(User::hasFilterScopeByKey('updated_at'));
 
-        $this->assertTrue(Post::hasGlobalScope(Post::generateFilterScopeKey('id')));
-        $this->assertTrue(Post::hasGlobalScope(Post::generateFilterScopeKey('title')));
-        $this->assertTrue(Post::hasGlobalScope(Post::generateFilterScopeKey('content')));
-        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('created_at')));
-        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('updated_at')));
+        $this->assertTrue(Post::hasFilterScopeByKey('id'));
+        $this->assertTrue(Post::hasFilterScopeByKey('title'));
+        $this->assertTrue(Post::hasFilterScopeByKey('content'));
+        $this->assertFalse(Post::hasFilterScopeByKey('created_at'));
+        $this->assertFalse(Post::hasFilterScopeByKey('updated_at'));
 
-        $this->assertTrue(Comment::hasGlobalScope(Comment::generateFilterScopeKey('id')));
-        $this->assertTrue(Comment::hasGlobalScope(Comment::generateFilterScopeKey('content')));
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('title')));
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('created_at')));
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('updated_at')));
+        $this->assertTrue(Comment::hasFilterScopeByKey('id'));
+        $this->assertTrue(Comment::hasFilterScopeByKey('content'));
+        $this->assertFalse(Comment::hasFilterScopeByKey('title'));
+        $this->assertFalse(Comment::hasFilterScopeByKey('created_at'));
+        $this->assertFalse(Comment::hasFilterScopeByKey('updated_at'));
     }
 }

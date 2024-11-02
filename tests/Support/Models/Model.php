@@ -18,4 +18,9 @@ class Model extends ParentModel
     {
         return FilterScopeHelper::generateName(new static(), $key);
     }
+
+    public static function hasFilterScopeByKey(string $key): bool
+    {
+        return static::hasGlobalScope(static::generateFilterScopeKey($key));
+    }
 }

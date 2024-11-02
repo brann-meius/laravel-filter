@@ -69,19 +69,19 @@ class CachedFilterManagerTest extends TestFilterManager
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('title')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('content')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('last_name')));
-        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('email')));
+        $this->assertFalse(User::hasFilterScopeByKey('id'));
+        $this->assertFalse(User::hasFilterScopeByKey('title'));
+        $this->assertFalse(User::hasFilterScopeByKey('content'));
+        $this->assertFalse(User::hasFilterScopeByKey('last_name'));
+        $this->assertFalse(User::hasFilterScopeByKey('email'));
 
-        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('id')));
-        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('title')));
-        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('content')));
+        $this->assertFalse(Post::hasFilterScopeByKey('id'));
+        $this->assertFalse(Post::hasFilterScopeByKey('title'));
+        $this->assertFalse(Post::hasFilterScopeByKey('content'));
 
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('id')));
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('content')));
-        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('title')));
+        $this->assertFalse(Comment::hasFilterScopeByKey('id'));
+        $this->assertFalse(Comment::hasFilterScopeByKey('content'));
+        $this->assertFalse(Comment::hasFilterScopeByKey('title'));
     }
 
     /**

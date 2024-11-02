@@ -7,7 +7,6 @@ namespace Meius\LaravelFilter\Tests\Unit\Services;
 use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
 use Meius\LaravelFilter\Exceptions\InvalidModelException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
-use Meius\LaravelFilter\Helpers\FilterScopeHelper;
 use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 use Mockery\MockInterface;
