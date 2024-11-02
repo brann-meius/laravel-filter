@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services\Filter;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
@@ -18,6 +19,9 @@ use Mockery\MockInterface;
 
 class CachedFilterManagerTest extends TestFilterManager
 {
+    /**
+     * @throws BindingResolutionException
+     */
     public function testAppliesFiltersFromCachePath(): void
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
@@ -44,27 +48,12 @@ class CachedFilterManagerTest extends TestFilterManager
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-title'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-content'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-last_name'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-email'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-created_at'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-updated_at'));
-
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-id'));
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-title'));
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-content'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-created_at'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-updated_at'));
-
-        $this->assertTrue(Comment::hasGlobalScope('filter:comments-by-id'));
-        $this->assertTrue(Comment::hasGlobalScope('filter:comments-by-content'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-title'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-created_at'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-updated_at'));
+        $this->assertCorrectConnections();
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function testAppliesNoFiltersWhenCacheIsEmpty(): void
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
@@ -80,21 +69,24 @@ class CachedFilterManagerTest extends TestFilterManager
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-title'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-content'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-last_name'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-email'));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('title')));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('content')));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('last_name')));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('email')));
 
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-id'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-title'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-content'));
+        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('id')));
+        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('title')));
+        $this->assertFalse(Post::hasGlobalScope(Post::generateFilterScopeKey('content')));
 
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-id'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-content'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-title'));
+        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('id')));
+        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('content')));
+        $this->assertFalse(Comment::hasGlobalScope(Comment::generateFilterScopeKey('title')));
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function testFallsBackToFilterManagerWhenCachePathFails(): void
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
@@ -107,24 +99,6 @@ class CachedFilterManagerTest extends TestFilterManager
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-title'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-content'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-last_name'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-email'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-created_at'));
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-updated_at'));
-
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-id'));
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-title'));
-        $this->assertTrue(Post::hasGlobalScope('filter:posts-by-content'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-created_at'));
-        $this->assertFalse(Post::hasGlobalScope('filter:posts-by-updated_at'));
-
-        $this->assertTrue(Comment::hasGlobalScope('filter:comments-by-id'));
-        $this->assertTrue(Comment::hasGlobalScope('filter:comments-by-content'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-title'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-created_at'));
-        $this->assertFalse(Comment::hasGlobalScope('filter:comments-by-updated_at'));
+        $this->assertCorrectConnections();
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Traits\Filters;
 
+use Meius\LaravelFilter\Helpers\FilterScopeHelper;
+
 trait FilterPathUtilities
 {
     /**
@@ -16,7 +18,7 @@ trait FilterPathUtilities
      */
     protected function generateFilterScopeName(): string
     {
-        return "filter:{$this->model->getTable()}-by-$this->key";
+        return FilterScopeHelper::generateName($this->model, $this->key);
     }
 
     /**

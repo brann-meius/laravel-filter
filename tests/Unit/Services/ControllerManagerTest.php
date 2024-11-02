@@ -7,6 +7,7 @@ namespace Meius\LaravelFilter\Tests\Unit\Services;
 use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
 use Meius\LaravelFilter\Exceptions\InvalidModelException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
+use Meius\LaravelFilter\Helpers\FilterScopeHelper;
 use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 use Mockery\MockInterface;
@@ -19,7 +20,7 @@ class ControllerManagerTest extends TestCase
             ->assertOk()
             ->assertJson([]);
 
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertTrue(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersSuccessfullyDuringRedirect(): void
@@ -27,7 +28,7 @@ class ControllerManagerTest extends TestCase
         $this->call('GET', '/', $this->request->all())
             ->assertRedirect('/users');
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersWhenNoAttributes(): void
@@ -36,7 +37,7 @@ class ControllerManagerTest extends TestCase
             ->assertOk()
             ->assertJson([]);
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersWhenAttributeDoesNotHaveModels(): void
