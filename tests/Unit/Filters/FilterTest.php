@@ -15,7 +15,7 @@ class FilterTest extends TestCase
     {
         $this->invokeInitializeModel(User::class);
 
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertTrue(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testInitializesModelFailsForNonExistentClass(): void

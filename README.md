@@ -12,6 +12,7 @@
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Usage](#usage)
     - [Creating Filters](#creating-filters)
     - [Applying Filters](#applying-filters)
@@ -22,6 +23,10 @@
     - [Prioritization of Settings](#prioritization-of-settings)
     - [Example Request Structure](#example-request-structure)
     - [Advanced Usage](#advanced-usage)
+- [Configuring Filter Aliases and Prefixes](#configuring-filter-aliases-and-prefixes)
+    - [Adding Filter Aliases to Models](#adding-filter-aliases-to-models)
+    - [Configuring the Filter Prefix](#configuring-the-filter-prefix)
+    - [Example JSON and URL Requests](#example-json-and-url-requests)
 - [Examples for Other Databases](#examples-for-other-databases)
 - [Support](#support)
 - [License](#license)
@@ -45,6 +50,15 @@ To get started with the `meius/laravel-filter` package, follow the installation 
     ```bash
     composer require meius/laravel-filter
     ```
+
+## Configuration
+
+1. To publish the configuration file, run the following command:
+    ```bash
+    php artisan vendor:publish --tag=filter-config
+    ```
+
+This will create a `config/filter.php` file where you can customize the filter settings.
 
 ## Usage
 
@@ -348,8 +362,62 @@ This means that if there are conflicting settings defined in multiple ways, only
     ```
 
 2. Example request:
-    ```http
+    ```http request
     GET /posts?filter[posts][title]=Hitchhiker&filter[posts][published_after]=2005-04-28&filter[comments][content]=42
+    ```
+   
+## Configuring Filter Aliases and Prefixes
+
+### Adding Filter Aliases to Models
+
+1. To add filter aliases to your models, use the `HasFilterAlias` trait and define the `$filterAlias` property in your model.
+
+    ```php
+    namespace App\Models;
+    
+    use Illuminate\Database\Eloquent\Model;
+    use Meius\LaravelFilter\Traits\HasFilterAlias;
+    
+    class HtmlFivePackage extends Model
+    {
+        use HasFilterAlias;
+    
+        protected string $filterAlias = 'h5p';
+    }
+    ```
+
+### Configuring the Filter Prefix
+
+1. You can change the filter prefix by modifying the `config/filter.php` configuration file. Update the `prefix` value to your desired string.
+
+    ```php
+    return [
+        'prefix' => 'f',
+    ];
+    ```
+
+### Example JSON and URL Requests
+
+1. JSON Request
+
+   Here, `"f"` is the filter prefix specified in the config, and `"h5p"` is the alias defined in the model.
+
+    ```json
+    {
+        "f": {
+            "h5p": {
+                "name": "blog"
+            }
+        }
+    }
+    ```
+
+2. URL Request
+
+   Similarly, in the URL request, `"f"` represents the filter prefix and `"h5p"` is the alias.
+
+    ```http request
+    GET /posts?f[h5p][name]=blog
     ```
 
 ## Advanced Usage

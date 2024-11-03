@@ -19,7 +19,7 @@ class ControllerManagerTest extends TestCase
             ->assertOk()
             ->assertJson([]);
 
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertTrue(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersSuccessfullyDuringRedirect(): void
@@ -27,7 +27,7 @@ class ControllerManagerTest extends TestCase
         $this->call('GET', '/', $this->request->all())
             ->assertRedirect('/users');
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersWhenNoAttributes(): void
@@ -36,7 +36,7 @@ class ControllerManagerTest extends TestCase
             ->assertOk()
             ->assertJson([]);
 
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
     public function testDoesNotApplyFiltersWhenAttributeDoesNotHaveModels(): void
