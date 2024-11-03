@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\App;
-
 return [
 
     /*
@@ -20,6 +18,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Filter URL Prefix
+    |--------------------------------------------------------------------------
+    |
+    | This value defines the prefix used for filtering parameters in URL queries.
+    | By default, 'filter' is used as the root key to group all filter parameters.
+    | For example, setting 'prefix' => 'filter' would format the filter query as:
+    | ?filter[model][key]=value. You can customize this to any string that suits
+    | your application needs.
+    |
+    */
+
+    'prefix' => 'filter',
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache Configuration
     |--------------------------------------------------------------------------
     |
@@ -29,7 +43,7 @@ return [
     */
 
     'cache' => [
-        'path' => App::bootstrapPath('cache/filters.php'),
+        'path' => base_path('bootstrap/cache/filters.php'),
     ],
 
     /*

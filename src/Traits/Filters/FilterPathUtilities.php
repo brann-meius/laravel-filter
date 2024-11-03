@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Traits\Filters;
 
+use Illuminate\Support\Facades\Config;
 use Meius\LaravelFilter\Helpers\FilterScopeHelper;
 use Meius\LaravelFilter\Traits\HasFilterAlias;
 
@@ -32,6 +33,6 @@ trait FilterPathUtilities
             default => $this->model->getTable(),
         };
 
-        return "filter.$table.$this->key";
+        return Config::get('filter.prefix', 'filter') . ".$table.$this->key";
     }
 }

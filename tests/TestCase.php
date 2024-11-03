@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Tests;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Illuminate\Support\Facades\Route;
 use Meius\LaravelFilter\Http\Middleware\ScopedFilterMiddleware;
@@ -36,7 +37,7 @@ class TestCase extends BaseTestCase
     protected function addToRequest(array $data): self
     {
         $this->request->merge([
-            'filter' => $data,
+            Config::get('filter.prefix', 'filter') => $data,
         ]);
 
         return $this;
