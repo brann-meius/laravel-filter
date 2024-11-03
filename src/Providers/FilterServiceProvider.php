@@ -40,7 +40,7 @@ class FilterServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../../config/filter.php' => $this->app->configPath('filter.php'),
-        ], 'config');
+        ], 'filter-config');
     }
 
     protected function registerRouteMiddleware(Router $router): void

@@ -7,6 +7,7 @@ All significant changes to `laravel-filter` will be documented in this file.
 ### Changed
 - **Refactor**: Removed the `Filterable` trait. Filters are now applied via middleware to simplify usage and enhance flexibility.
 - **Configuration Update**: Revised configuration to allow specifying route groups for filter application, enabling targeted filter usage.
+- **Aliases and Prefix**: Added support for filter aliases and customizable filter prefixes to streamline query parameters.
 
 ### Migration Steps
 To upgrade to version 2.0.0, please follow these steps:
