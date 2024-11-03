@@ -13,6 +13,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ 8, 8.1, 8.2, 8.3 ]
+        laravel: [ 9, 10, 11 ]
 
     steps:
       - name: Checkout code
@@ -28,13 +32,20 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.0'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, xml, json, pdo_mysql, xdebug
           ini-values: post_max_size=256M, upload_max_filesize=256M
           coverage: xdebug
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer require illuminate/console:${{ matrix.laravel }} \
+          illuminate/database:${{ matrix.laravel }} \
+          illuminate/filesystem:${{ matrix.laravel }} \
+          illuminate/http:${{ matrix.laravel }} \
+          illuminate/log:${{ matrix.laravel }} \
+          illuminate/routing:${{ matrix.laravel }} \
+          illuminate/support:${{ matrix.laravel }} \
+          --prefer-dist --no-progress --no-suggest
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse src tests
