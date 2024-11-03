@@ -17,7 +17,9 @@ abstract class Model extends ParentModel
 
     public static function generateFilterScopeKey(string $key): string
     {
-        return FilterScopeHelper::generateName(new static(), $key);
+        $model = static::class;
+
+        return FilterScopeHelper::generateName(new $model(), $key);
     }
 
     public static function hasFilterScopeByKey(string $key): bool
