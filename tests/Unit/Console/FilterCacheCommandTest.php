@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Console;
 
-use Meius\LaravelFilter\Providers\AppServiceProvider;
 use Meius\LaravelFilter\Tests\Support\Filters\ContentFilter;
 use Meius\LaravelFilter\Tests\Support\Filters\CreatedAtFilter;
 use Meius\LaravelFilter\Tests\Support\Filters\IdFilter;
@@ -77,8 +76,6 @@ class FilterCacheCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->app->register(AppServiceProvider::class);
 
         $this->mock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('delete')

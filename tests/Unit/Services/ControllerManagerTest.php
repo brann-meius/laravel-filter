@@ -4,66 +4,60 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services;
 
-use Meius\LaravelFilter\Exceptions\InvalidControllerMethodException;
 use Meius\LaravelFilter\Exceptions\InvalidFilterBindingException;
+use Meius\LaravelFilter\Exceptions\InvalidModelException;
 use Meius\LaravelFilter\Factories\FilterManagerFactory;
-use Meius\LaravelFilter\Tests\Support\Http\Controllers\UserController;
 use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 use Mockery\MockInterface;
 
 class ControllerManagerTest extends TestCase
 {
-    /**
-     * @throws InvalidFilterBindingException
-     * @throws InvalidControllerMethodException
-     */
     public function testAppliesFiltersSuccessfully(): void
     {
-        $this->callControllerMethod('index');
-        $this->assertTrue(User::hasGlobalScope('filter:users-by-id'));
+        $this->call('GET', '/users', $this->request->all())
+            ->assertOk()
+            ->assertJson([]);
+
+        $this->assertTrue(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
-    /**
-     * @throws InvalidFilterBindingException
-     * @throws InvalidControllerMethodException
-     */
+    public function testDoesNotApplyFiltersSuccessfullyDuringRedirect(): void
+    {
+        $this->call('GET', '/', $this->request->all())
+            ->assertRedirect('/users');
+
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
+    }
+
     public function testDoesNotApplyFiltersWhenNoAttributes(): void
     {
-        $this->callControllerMethod('store');
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->post('/users', $this->request->all())
+            ->assertOk()
+            ->assertJson([]);
+
+        $this->assertFalse(User::hasGlobalScope(User::generateFilterScopeKey('id')));
     }
 
-    /**
-     * @throws InvalidFilterBindingException
-     * @throws InvalidControllerMethodException
-     */
     public function testDoesNotApplyFiltersWhenAttributeDoesNotHaveModels(): void
     {
-        $this->callControllerMethod('edit');
-        $this->assertFalse(User::hasGlobalScope('filter:users-by-id'));
+        $this->withoutExceptionHandling();
+        $this->expectException(InvalidModelException::class);
+
+        $this->call('GET', '/users/12', $this->request->all());
     }
 
-    /**
-     * @throws InvalidFilterBindingException
-     */
-    public function testInvalidMethodCallThrowsException(): void
-    {
-        $this->expectException(InvalidControllerMethodException::class);
-        $this->callControllerMethod('update');
-    }
-
-    /**
-     * @throws InvalidControllerMethodException
-     */
     public function testInvalidFilterBindingException(): void
     {
-        $this->expectException(InvalidFilterBindingException::class);
         $this->mock(FilterManagerFactory::class, function (MockInterface $mock): void {
             $mock->shouldReceive('create')
                 ->andThrow(new InvalidFilterBindingException());
         });
-        $this->callControllerMethod('index');
+
+        $this->withoutExceptionHandling();
+        $this->expectException(InvalidFilterBindingException::class);
+
+        $this->call('GET', '/users', $this->request->all());
     }
 
     protected function setUp(): void
@@ -75,17 +69,5 @@ class ControllerManagerTest extends TestCase
                 'id' => 1,
             ]
         ]);
-    }
-
-
-    /**
-     * @throws InvalidFilterBindingException
-     * @throws InvalidControllerMethodException
-     */
-    private function callControllerMethod(string $method): void
-    {
-        /** @var UserController $controller */
-        $controller = $this->app->make(UserController::class);
-        $controller->callAction($method, []);
     }
 }

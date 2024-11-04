@@ -10,13 +10,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Meius\LaravelFilter\Filters\FilterInterface;
-use Meius\LaravelFilter\Helpers\FinderHelper;
+use Meius\LaravelFilter\Services\FinderService;
 use ReflectionClass;
 use ReflectionException;
 
 class FilterManager implements FilterManagerInterface
 {
-    public function __construct(protected FinderHelper $splFileInfoHelper)
+    public function __construct(protected FinderService $finderService)
     {
         //
     }
@@ -30,8 +30,8 @@ class FilterManager implements FilterManagerInterface
 
     public function filters(): Generator
     {
-        foreach ($this->splFileInfoHelper->configureFinderFiles($this->baseFilterDirectory()) as $file) {
-            $filter = $this->splFileInfoHelper->getNamespace($file);
+        foreach ($this->finderService->configureFinderFiles($this->baseFilterDirectory()) as $file) {
+            $filter = $this->finderService->getNamespace($file);
 
             if ($this->isValidFilterClass($filter)) {
                 yield new $filter();

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Console;
 
-use Meius\LaravelFilter\Providers\AppServiceProvider;
 use Meius\LaravelFilter\Tests\TestCase;
 use Illuminate\Filesystem\Filesystem;
 use Mockery\MockInterface;
@@ -33,12 +32,5 @@ class FilterClearCommandTest extends TestCase
         $this->artisan('filter:clear')
             ->expectsOutputToContain('Failed to clear filters cache file: Failed to clear filters cache file.')
             ->assertFailed();
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->app->register(AppServiceProvider::class);
     }
 }

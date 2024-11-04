@@ -8,12 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Meius\LaravelFilter\Attributes\ApplyFiltersTo;
 use Meius\LaravelFilter\Tests\Support\Models\User;
-use Meius\LaravelFilter\Traits\Filterable;
 
 class UserController extends Controller
 {
-    use Filterable;
-
     #[ApplyFiltersTo(User::class)]
     public function index(): JsonResponse
     {

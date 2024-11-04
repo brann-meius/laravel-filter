@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Services;
 
-use Meius\LaravelFilter\Helpers\FinderHelper;
+use Meius\LaravelFilter\Services\FinderService;
 use Meius\LaravelFilter\Services\ModelManager;
 use Meius\LaravelFilter\Tests\Support\Models\Comment;
 use Meius\LaravelFilter\Tests\Support\Models\Post;
@@ -43,7 +43,7 @@ class ModelManagerTest extends TestCase
     public function testModelDoesNotExist(): void
     {
         $this->moveModels();
-        $this->mock(FinderHelper::class, function (MockInterface $mock): void {
+        $this->mock(FinderService::class, function (MockInterface $mock): void {
             $mock->shouldReceive('configureFinderFiles')
                 ->andReturn(
                     Finder::create()

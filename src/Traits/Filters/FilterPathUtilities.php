@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Traits\Filters;
 
+use Illuminate\Support\Facades\Config;
+use Meius\LaravelFilter\Helpers\FilterScopeHelper;
+use Meius\LaravelFilter\Traits\HasFilterAlias;
+
 trait FilterPathUtilities
 {
     /**
@@ -16,7 +20,7 @@ trait FilterPathUtilities
      */
     protected function generateFilterScopeName(): string
     {
-        return "filter:{$this->model->getTable()}-by-$this->key";
+        return FilterScopeHelper::generateName($this->model, $this->key);
     }
 
     /**
@@ -24,6 +28,11 @@ trait FilterPathUtilities
      */
     protected function extractFilterPathFromRequest(): string
     {
-        return "filter.{$this->model->getTable()}.$this->key";
+        $table = match (in_array(HasFilterAlias::class, class_uses($this->model))) {
+            true => $this->model->getFilterAlias(),
+            default => $this->model->getTable(),
+        };
+
+        return Config::get('filter.prefix', 'filter') . ".$table.$this->key";
     }
 }
