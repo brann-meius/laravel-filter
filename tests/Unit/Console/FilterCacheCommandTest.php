@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Tests\Unit\Console;
 
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 use Meius\LaravelFilter\Tests\Support\Filters\ContentFilter;
 use Meius\LaravelFilter\Tests\Support\Filters\CreatedAtFilter;
 use Meius\LaravelFilter\Tests\Support\Filters\IdFilter;
@@ -14,7 +15,6 @@ use Meius\LaravelFilter\Tests\Support\Models\Post;
 use Meius\LaravelFilter\Tests\Support\Models\User;
 use Meius\LaravelFilter\Tests\TestCase;
 use Illuminate\Filesystem\Filesystem;
-use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
 use Meius\LaravelFilter\Services\ModelManager;
 use Meius\LaravelFilter\Console\FilterCacheCommand;
 use Mockery\MockInterface;
@@ -28,12 +28,10 @@ class FilterCacheCommandTest extends TestCase
                 ->andReturn(true);
         });
 
-        $this->mock(CachedFilterManager::class, function (MockInterface $mock) {
+        $this->mock(FilterManager::class, function (MockInterface $mock) {
             $mock->shouldReceive('filters')
                 ->andReturn($this->filters());
             $mock->shouldReceive('filterModelsBySettings')
-                ->andReturn($this->models());
-            $mock->shouldReceive('getModels')
                 ->andReturn($this->models());
         });
 
@@ -44,7 +42,7 @@ class FilterCacheCommandTest extends TestCase
 
     public function testCreatesCacheFileWhenFiltersDoesNotExist(): void
     {
-        $this->mock(CachedFilterManager::class, function (MockInterface $mock) {
+        $this->mock(FilterManager::class, function (MockInterface $mock) {
             $mock->shouldReceive('filters')
                 ->andReturn($this->emptyFilters());
         });
@@ -56,7 +54,7 @@ class FilterCacheCommandTest extends TestCase
 
     public function testFailsToCreateCacheFileWhenExceptionIsThrown(): void
     {
-        $this->mock(CachedFilterManager::class, function (MockInterface $mock) {
+        $this->mock(FilterManager::class, function (MockInterface $mock) {
             $mock->shouldReceive('filters')
                 ->andReturn($this->filters());
             $mock->shouldReceive('filterModelsBySettings')

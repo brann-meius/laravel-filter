@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Meius\LaravelFilter\Filters\FilterInterface;
-use Meius\LaravelFilter\Services\Filter\CachedFilterManager;
+use Meius\LaravelFilter\Services\Filter\FilterManager;
 use Meius\LaravelFilter\Services\ModelManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 
@@ -21,7 +21,7 @@ class FilterCacheCommand extends Command
 {
     public function handle(
         Filesystem $filesystem,
-        CachedFilterManager $filterManager,
+        FilterManager $filterManager,
         ModelManager $modelManager
     ): int {
         $this->callSilent('filter:clear');
@@ -42,7 +42,7 @@ class FilterCacheCommand extends Command
      *
      * @return array<class-string<Model>, class-string<FilterInterface>[]>
      */
-    private function getFilters(CachedFilterManager $filterManager, ModelManager $modelManager): array
+    private function getFilters(FilterManager $filterManager, ModelManager $modelManager): array
     {
         $filters = $filterManager->filters();
         $models = $modelManager->getModels();
