@@ -68,7 +68,7 @@ class FilterCacheCommand extends Command
     {
         try {
             $filesystem->put(
-                Config::get('filter.cache.path'),
+                Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')),
                 '<?php return ' . var_export($modelFiltersAssociation, true) . ';' . PHP_EOL
             );
             $this->components->info('Filters cached successfully.');

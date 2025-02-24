@@ -27,7 +27,7 @@ class CachedFilterManagerTest extends TestFilterManager
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('requireOnce')
-                ->with(Config::get('filter.cache.path'))
+                ->with(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')))
                 ->andReturn([
                     User::class => [
                         IdFilter::class,
@@ -60,7 +60,7 @@ class CachedFilterManagerTest extends TestFilterManager
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('requireOnce')
-                ->with(Config::get('filter.cache.path'))
+                ->with(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')))
                 ->andReturn([
                     User::class => [],
                     Comment::class => [],
