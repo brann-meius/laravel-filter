@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Meius\LaravelFilter\Services\Filter;
 
+use Generator;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
@@ -14,51 +15,58 @@ use Meius\LaravelFilter\Services\FinderService;
 class CachedFilterManager extends FilterManager
 {
     public function __construct(
-        protected FinderService $finderService,
-        protected Filesystem $filesystem,
-        private FilterManager $filterManager
+        FinderService $finderService,
+        protected Filesystem $filesystem
     ) {
         parent::__construct($finderService);
     }
 
-    #[\Override]
     public function apply(array $models, Request $request): void
     {
         try {
-            $filters = $this->loadFiltersFromCache();
+            foreach ($models as $model) {
+                $this->applyFiltersForModel($model, $request);
+            }
         } catch (\Throwable) {
-            $this->filterManager->apply($models, $request);
+            parent::apply($models, $request);
 
             return;
-        }
-
-        foreach ($models as $model) {
-            $this->applyFiltersForModel($model, $filters, $request);
         }
     }
 
     /**
-     * Load filters from the cache file, or return null if the cache is unavailable.
-     *
      * @throws FileNotFoundException
      */
-    private function loadFiltersFromCache(): array
+    public function filters(string $model = null): Generator
     {
-        return $this->filesystem->requireOnce(Config::get('filter.cache.path', []));
+        static $filters = [];
+
+        if (empty($filters)) {
+            $path = Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php'));
+
+            $filters =  $this->filesystem->requireOnce($path);
+        }
+
+        if ($model !== null) {
+            yield from $filters[$model] ?? [];
+        } else {
+            yield from array_unique(
+                array_merge(
+                    ...array_values($filters)
+                )
+            );
+        }
     }
 
     /**
      * Apply all relevant filters to a given model.
      *
      * @param class-string<Model> $model
+     * @throws FileNotFoundException
      */
-    private function applyFiltersForModel(string $model, array $filters, Request $request): void
+    private function applyFiltersForModel(string $model, Request $request): void
     {
-        if (empty($filters[$model])) {
-            return;
-        }
-
-        foreach ($filters[$model] as $filter) {
+        foreach ($this->filters($model) as $filter) {
             if (! class_exists($filter)) {
                 continue;
             }

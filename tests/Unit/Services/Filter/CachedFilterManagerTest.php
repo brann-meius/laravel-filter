@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Meius\LaravelFilter\Tests\Unit\Services\Filter;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
@@ -26,7 +27,7 @@ class CachedFilterManagerTest extends TestFilterManager
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('requireOnce')
-                ->with(Config::get('filter.cache.path'))
+                ->with(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')))
                 ->andReturn([
                     User::class => [
                         IdFilter::class,
@@ -44,7 +45,7 @@ class CachedFilterManagerTest extends TestFilterManager
                 ]);
         });
 
-        /** @var CachedFilterManager $cachedFilterManager*/
+        /** @var CachedFilterManager $cachedFilterManager */
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
@@ -52,20 +53,22 @@ class CachedFilterManagerTest extends TestFilterManager
     }
 
     /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @throws BindingResolutionException
      */
     public function testAppliesNoFiltersWhenCacheIsEmpty(): void
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('requireOnce')
-                ->with(Config::get('filter.cache.path'))
+                ->with(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')))
                 ->andReturn([
                     User::class => [],
                     Comment::class => [],
                 ]);
         });
 
-        /** @var CachedFilterManager $cachedFilterManager*/
+        /** @var CachedFilterManager $cachedFilterManager */
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 
@@ -91,11 +94,11 @@ class CachedFilterManagerTest extends TestFilterManager
     {
         $this->partialMock(Filesystem::class, function (MockInterface $mock): void {
             $mock->shouldReceive('requireOnce')
-                ->with(Config::get('filter.cache.path', ''))
-                ->andThrow(new \Exception('Test exception'));
+                ->with(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')))
+                ->andThrow(new FileNotFoundException('Test exception'));
         });
 
-        /** @var CachedFilterManager $cachedFilterManager*/
+        /** @var CachedFilterManager $cachedFilterManager */
         $cachedFilterManager = $this->app->make(CachedFilterManager::class);
         $cachedFilterManager->apply([User::class, Post::class, Comment::class], Request::instance());
 

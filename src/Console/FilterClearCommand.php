@@ -19,7 +19,7 @@ class FilterClearCommand extends Command
     {
         try {
             $filesystem->delete(
-                Config::get('filter.cache.path')
+                Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php'))
             );
         } catch (\Throwable $exception) {
             $this->components->error('Failed to clear filters cache file: ' . $exception->getMessage());

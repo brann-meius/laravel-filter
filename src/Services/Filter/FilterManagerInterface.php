@@ -23,6 +23,8 @@ interface FilterManagerInterface
 
     /**
      * Get a generator for iterating over the filters.
+     *
+     * @return Generator<class-string<FilterInterface>>
      */
     public function filters(): Generator;
 

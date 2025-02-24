@@ -47,6 +47,6 @@ class FilterManagerFactory
      */
     protected function hasCache(): bool
     {
-        return $this->filesystem->exists(Config::get('filter.cache.path'));
+        return $this->filesystem->exists(Config::get('filter.cache.path', base_path('bootstrap/cache/filters.php')));
     }
 }
