@@ -54,6 +54,7 @@ class CachedFilterManagerTest extends TestFilterManager
 
     /**
      * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @throws BindingResolutionException
      */
     public function testAppliesNoFiltersWhenCacheIsEmpty(): void
