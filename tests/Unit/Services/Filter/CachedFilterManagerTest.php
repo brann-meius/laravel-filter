@@ -104,4 +104,19 @@ class CachedFilterManagerTest extends TestFilterManager
 
         $this->assertCorrectConnections();
     }
+
+    /**
+     * @throws BindingResolutionException
+     * @throws FileNotFoundException
+     */
+    public function testReturnsAllFiltersWhenModelIsNull(): void
+    {
+        /** @var CachedFilterManager $cachedFilterManager */
+        $cachedFilterManager = $this->app->make(CachedFilterManager::class);
+        $filters = iterator_to_array($cachedFilterManager->filters());
+
+        $this->assertContains(IdFilter::class, $filters);
+        $this->assertContains(TitleFilter::class, $filters);
+        $this->assertContains(ContentFilter::class, $filters);
+    }
 }
