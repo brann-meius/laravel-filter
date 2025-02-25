@@ -2,6 +2,16 @@
 
 All significant changes to `laravel-filter` will be documented in this file.
 
+## [2.0.1]
+
+### Fixed
+- Fixed operation when no cache file is present.
+- Fixed exception handling in routes defined with closures.
+
+### Enhancements
+- Removed unused dependencies.
+- Added support for Laravel 12.x.
+
 ## [2.0.0]
 
 ### Changed
