@@ -44,15 +44,14 @@ class FilterCacheCommand extends Command
      */
     private function getFilters(FilterManager $filterManager, ModelManager $modelManager): array
     {
-        $filters = $filterManager->filters();
         $models = $modelManager->getModels();
         $modelFiltersAssociation = [];
 
-        foreach ($filters as $filter) {
-            $filteredModels = $filterManager->filterModelsBySettings($models, $filter);
+        foreach ($filterManager->filters() as $filter) {
+            $filteredModels = $filterManager->filterModelsBySettings($models, new $filter);
 
             foreach ($filteredModels as $model) {
-                $modelFiltersAssociation[$model][] = $filter::class;
+                $modelFiltersAssociation[$model][] = $filter;
             }
         }
 
