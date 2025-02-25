@@ -18,8 +18,9 @@ class ScopedFilterMiddleware
 {
     use Reflective;
 
-    public function __construct(private ControllerManager $controllerManager)
-    {
+    public function __construct(
+        private ControllerManager $controllerManager
+    ) {
         //
     }
 
@@ -52,6 +53,10 @@ class ScopedFilterMiddleware
      */
     private function getReflectionMethod(Route $route): ReflectionMethod
     {
+        if ($route->getController() === null) {
+            throw new ReflectionException('Controller not found.');
+        }
+
         return new ReflectionMethod(
             $route->getControllerClass(),
             $route->getActionMethod()
