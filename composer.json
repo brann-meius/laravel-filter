@@ -34,20 +34,19 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^8",
-    "illuminate/console": "^9 || ^10 || ^11",
-    "illuminate/database": "^9 || ^10 || ^11",
-    "illuminate/filesystem": "^9 || ^10 || ^11",
-    "illuminate/http": "^9 || ^10 || ^11",
-    "illuminate/log": "^9 || ^10 || ^11",
-    "illuminate/routing": "^9 || ^10 || ^11",
-    "illuminate/support": "^9 || ^10 || ^11"
+    "php": "^8.0",
+    "illuminate/console": "^9.0 || ^10.0 || ^11.0 || ^12.0",
+    "illuminate/database": "^9.0 || ^10.0 || ^11.0 || ^12.0",
+    "illuminate/filesystem": "^9.0 || ^10.0 || ^11.0 || ^12.0",
+    "illuminate/http": "^9.0 || ^10.0 || ^11.0 || ^v12.0",
+    "illuminate/routing": "^9.0 || ^10.0 || ^11.0 || ^12.0",
+    "illuminate/support": "^9.0 || ^10.0 || ^11.0 || ^12.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^1 || ^2",
     "friendsofphp/php-cs-fixer": "*",
     "phpunit/phpunit": "^9.6 || ^10",
-    "orchestra/testbench": "^7 || ^8 || ^9",
+    "orchestra/testbench": "^7 || ^8 || ^9 || ^10",
     "squizlabs/php_codesniffer": "4.0.x-dev"
   },
   "extra": {
