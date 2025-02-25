@@ -29,8 +29,6 @@ class CachedFilterManager extends FilterManager
             }
         } catch (\Throwable) {
             parent::apply($models, $request);
-
-            return;
         }
     }
 
