@@ -16,15 +16,16 @@ use ReflectionException;
 
 class FilterManager implements FilterManagerInterface
 {
-    public function __construct(protected FinderService $finderService)
-    {
+    public function __construct(
+        protected FinderService $finderService
+    ) {
         //
     }
 
     public function apply(array $models, Request $request): void
     {
         foreach ($this->filters() as $filter) {
-            $this->applyFilterToModels($filter, $this->filterModelsBySettings($models, $filter), $request);
+            $this->applyFilterToModels($filter, $this->filterModelsBySettings($models, new $filter), $request);
         }
     }
 
@@ -34,7 +35,7 @@ class FilterManager implements FilterManagerInterface
             $filter = $this->finderService->getNamespace($file);
 
             if ($this->isValidFilterClass($filter)) {
-                yield new $filter();
+                yield $filter;
             }
         }
     }
@@ -78,10 +79,10 @@ class FilterManager implements FilterManagerInterface
     /**
      * Apply the filter to the specified models.
      */
-    protected function applyFilterToModels(FilterInterface $filter, array $models, Request $request): void
+    protected function applyFilterToModels(string $filter, array $models, Request $request): void
     {
         foreach ($models as $model) {
-            $filter($model, $request);
+            (new $filter)($model, $request);
         }
     }
 
